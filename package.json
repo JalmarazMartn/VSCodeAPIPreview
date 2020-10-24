@@ -1,0 +1,101 @@
+{
+	"name": "vscAPIPrev",
+	"displayName": "VSCodeAPIPreview",
+	"description": "Exploring VSCode API",
+	"publisher": "Jalmaraz",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.49.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:vscAPIPrev.AlVarNameSel",
+		"onCommand:vscAPIPrev.AlVarNameAll",
+		"onCommand:vscAPIPrev.BeginTrans",
+		"onCommand:vscAPIPrev.EditTrans",
+		"onCommand:vscAPIPrev.SaveTrans",
+		"onCommand:vscAPIPrev.CreateTransFile",
+		"onCommand:vscAPIPrev.AvoidImpWith",
+		"onCommand:vscAPIPrev.AplicationArea",
+		"onCommand:vscAPIPrev.MiscPruebas"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "vscAPIPrev",
+			"properties": {
+				"CharsFrom": {
+					"type": "string",
+					"default": "áéíóúÁÉÍÓÚ",
+					"description": "Chars to substitute in AL Naming"
+				},
+				"CharsTo": {
+					"type": "string",
+					"default": "aeiouAEIOU",
+					"description": "Chars to substitute in AL Naming"
+				},
+				"JSONTranslationFilename": {
+					"type": "string",
+					"default": "JSONTranslation.json",
+					"description": "Temporal translation file"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "vscAPIPrev.AlVarNameSel",
+				"title": "TIPSAALSelectionVarNaming"
+			},
+			{
+				"command": "vscAPIPrev.AlVarNameAll",
+				"title": "TIPSAALAllDocVarNaming"
+			},
+			{
+				"command": "vscAPIPrev.BeginTrans",
+				"title": "TIPSA Translation Step 1: Load Xlf file"
+			},
+			{
+				"command": "vscAPIPrev.EditTrans",
+				"title": "TIPSA Translation Step 2: Edit traslation"
+			},
+			{
+				"command": "vscAPIPrev.SaveTrans",
+				"title": "TIPSA Translation Step 3: Save traslation"
+			},
+			{
+				"command": "vscAPIPrev.CreateTransFile",
+				"title": "TIPSA Translation Step 4: Create final file"
+			},
+			{
+				"command": "vscAPIPrev.AvoidImpWith",
+				"title": "TIPSA Put Rec prefix"
+			},
+			{
+				"command": "vscAPIPrev.AplicationArea",
+				"title": "TIPSA Add AplicatioArea/DataCalsification"
+			},
+			{
+				"command": "vscAPIPrev.MiscPruebas",
+				"title": "TIPSA Pruebas diversas para uso interno"
+			}			
+		]
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.49.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.0",
+		"@types/node": "^14.0.27",
+		"eslint": "^7.6.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.0.2",
+		"vscode-test": "^1.4.0"
+	}
+}

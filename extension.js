@@ -28,6 +28,12 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposableEditTrans);	
 
+	let disposableSaveTrans = vscode.commands.registerCommand('vscAPIPrev.SaveTrans', function () {
+		const translation = require('./src/translations.js');		
+		translation.SaveTranslation();
+	});
+	context.subscriptions.push(disposableSaveTrans);	
+
 	let disposableAll = vscode.commands.registerCommand('vscAPIPrev.AlVarNameAll', function () {
 		//Test v1:Record  "S H";
 		vscode.window.showInputBox({

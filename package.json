@@ -41,11 +41,6 @@
 					"default": "JSONTranslation.json",
 					"description": "Temporal translation file"
 				},
-				"SourceLanguage": {
-					"type": "string",
-					"default": "en-US",
-					"description": "Temporal translation file"
-				},
 				"TargetLanguage": {
 					"type": "string",
 					"default": "es-ES",

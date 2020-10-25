@@ -164,7 +164,9 @@ async function WriteNewXlfFile(NewTitle='')
 			const TargetLineText = LineText.replace(SourceText, TargetText);
 			lastLine = await WriteNewXlfLine(TargetLineText,WSEdit, CurrDoc, lastLine);			
 		}
+	
 	}
+	await vscode.workspace.applyEdit(WSEdit);
 }
 async function WriteNewXlfLine(LineText='',WSEdit, CurrDoc, lastLine)
 {

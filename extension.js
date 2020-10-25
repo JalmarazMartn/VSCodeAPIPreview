@@ -34,6 +34,12 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposableSaveTrans);	
 
+	let disposableCreateTrans = vscode.commands.registerCommand('vscAPIPrev.CreateTransFile', function () {
+		const translation = require('./src/translations.js');		
+		translation.CreateTranslation();
+	});
+	context.subscriptions.push(disposableCreateTrans);
+
 	let disposableAll = vscode.commands.registerCommand('vscAPIPrev.AlVarNameAll', function () {
 		//Test v1:Record  "S H";
 		vscode.window.showInputBox({

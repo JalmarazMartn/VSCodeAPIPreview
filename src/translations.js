@@ -78,7 +78,7 @@ async function BeginEditTranslation() {
 	let lastLine = CurrDoc.lineCount;
 	for (var i = 0; i < JSONTrans.length; i++) {
 		var element = JSONTrans[i];
-		const NeedTranslation = (element.target == '') || (element.target == element.source);
+		let NeedTranslation = (element.target == '') || (element.target == element.source);
 		if (NeedTranslation) {
 			lastLine = await WriteElementToEdit(element, WSEdit, CurrDoc, lastLine);
 		}

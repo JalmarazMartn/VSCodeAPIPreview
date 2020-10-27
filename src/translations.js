@@ -31,7 +31,7 @@ async function ProcessXlfFile(newtitle, JSONTrans) {
 		}
 	};
 	let fileUri = await vscode.window.showOpenDialog(options);
-	vscode.window.showInformationMessage(fileUri[0].fsPath);
+	//vscode.window.showInformationMessage(fileUri[0].fsPath);
 	let XlfDoc = await vscode.workspace.openTextDocument(fileUri[0].fsPath);
 	var LastSourceText = '';
 	for (var i = 0; i < XlfDoc.lineCount; i++) {
@@ -42,10 +42,11 @@ async function ProcessXlfFile(newtitle, JSONTrans) {
 }
 function WriteJSONTrans(linetext, JSONTrans, LastSourceText) {
 	if (linetext.match('<source>')) {
-		if (!JSONTrans.find(JSONTrans => JSONTrans.source == linetext)) {
+		var ReplacedLineText = linetext.replace(RexRemoveLabels, GetTranslationText);
+		if (!JSONTrans.find(JSONTrans => JSONTrans.source == ReplacedLineText)) {
 			JSONTrans.push(
 				{
-					"source": linetext.replace(RexRemoveLabels, GetTranslationText),
+					"source": ReplacedLineText,
 					"target": ''
 				});
 		}
@@ -70,6 +71,8 @@ function GetTranslationText(fullMatch = '', startLabe = '', content = '', endLab
 	return (content);
 }
 async function BeginEditTranslation() {
+	if (await ErrorIfNotEmptyDoc())
+	{return;}
 	var currEditor = vscode.window.activeTextEditor;
 	let CurrDoc = currEditor.document;
 	var JSONTrans = [];
@@ -77,8 +80,8 @@ async function BeginEditTranslation() {
 	JSONTrans = ReadJSONTransFile(JSONTrans);
 	let lastLine = CurrDoc.lineCount;
 	for (var i = 0; i < JSONTrans.length; i++) {
-		var element = JSONTrans[i];		
-		if ((element.target == '')) {
+		var element = JSONTrans[i];
+		if (element.target == '') {
 			lastLine = await WriteElementToEdit(element, WSEdit, CurrDoc, lastLine);
 		}
 	}
@@ -134,6 +137,9 @@ async function CreateTranslationXlf() {
 	await WriteNewXlfFile('Select xlf file',);
 }
 async function WriteNewXlfFile(NewTitle = '') {
+	if (await ErrorIfNotEmptyDoc())
+	{return;}
+
 	var JSONTrans = [];
 	JSONTrans = ReadJSONTransFile(JSONTrans);
 
@@ -185,4 +191,28 @@ function GetTargetLanguage() {
 	if (ExtConf) {
 		return (ExtConf.get('TargetLanguage'));
 	}	
+}
+async function ErrorIfNotEmptyDoc()
+{
+	var currEditor = vscode.window.activeTextEditor;
+	if (!currEditor)
+	{await vscode.window.showErrorMessage('There is no current editor.')
+	return true;
+}
+	let CurrDoc = currEditor.document;
+	if (!CurrDoc)
+	{await vscode.window.showErrorMessage('There is no current document.')
+	return true;
+}
+
+	let CharCount = 0;
+	for (var i = 0; i < CurrDoc.lineCount; i++) {
+		CharCount = CharCount + CurrDoc.lineAt(i).text.length;
+	}		
+	if (CharCount > 0)
+	{await vscode.window.showErrorMessage('The current document must be empty.')
+	return true;
+}
+
+	return false;
 }

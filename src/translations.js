@@ -67,7 +67,7 @@ function getJSONFileName() {
 	return (returnedName);
 }
 // @ts-ignore
-function GetTranslationText(fullMatch = '', startLabe = '', content = '', endLabel = '') {
+function GetTranslationText(fullMatch = '', startLabel = '', content = '', endLabel = '') {
 	return (content);
 }
 async function BeginEditTranslation() {
@@ -81,7 +81,7 @@ async function BeginEditTranslation() {
 	let lastLine = CurrDoc.lineCount;
 	for (var i = 0; i < JSONTrans.length; i++) {
 		var element = JSONTrans[i];
-		if (element.target == '') {
+		if ((element.target == '') ||(element.target == element.source)) {
 			lastLine = await WriteElementToEdit(element, WSEdit, CurrDoc, lastLine);
 		}
 	}

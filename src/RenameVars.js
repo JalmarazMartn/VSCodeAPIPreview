@@ -41,8 +41,9 @@ async function ALVariableNaming(lineNumber = 0, original) {
 }
 async function MatchProcess(element, original = '', lineNumber = 0) {
 	const singleMatch = element.match(GetRegExpVarDeclaration(false));
+	const FullMatch = singleMatch[0];
 	const VarName = singleMatch[5];
-	let posVarName = original.indexOf(VarName);
+	let posVarName = original.indexOf(FullMatch) + FullMatch.indexOf(VarName);
 	const VarSubtype = singleMatch[7];
 	var NewVarName = GetNewVarName(VarSubtype);
 	if (VarName.indexOf(NewVarName) >= 0)
@@ -86,7 +87,7 @@ function GetRegExpVarDeclaration(isGlobal = false) {
 	const G2ByRef = new RegExp(/(var|.{0})/.source);
 	const G2NewLine = new RegExp(/($|.{0})/.source);
 	const G2Spaces = new RegExp(/(\s*)/.source);
-	const G3VarNeme = new RegExp(/([A-Za-z\s0-9"]*):\s*/.source);
+	const G3VarName = new RegExp(/([A-Za-z\s0-9"]*):\s*/.source);
 	const G4VarType = new RegExp(/(Record|Page|Report|Codeunit|Query|XmlPort)/.source);
 	const G5VarSubType = new RegExp(/([A-Za-z\s0-9"-\/]*)/.source);
 	const G6EndStat = new RegExp(/(\)|;)/.source);
@@ -96,7 +97,7 @@ function GetRegExpVarDeclaration(isGlobal = false) {
 		G2ByRef.source +
 		G2NewLine.source +
 		G2Spaces.source +
-		G3VarNeme.source +
+		G3VarName.source +
 		G4VarType.source +
 		G5VarSubType.source +
 		G6EndStat.source, searchParams));

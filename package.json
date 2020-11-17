@@ -1,6 +1,6 @@
 {
 	"name": "vscAPIPrev",
-	"displayName": "Almaraz-TIPSA AL Utilities",
+	"displayName": "Almaraz-JAM AL Utilities",
 	"description": "Exploring VSCode API",
 	"publisher": "Jalmaraz",
 	"version": "0.0.1",
@@ -52,39 +52,39 @@
 		"commands": [
 			{
 				"command": "vscAPIPrev.AlVarNameSel",
-				"title": "TIPSAALSelectionVarNaming"
+				"title": "JAMALSelectionVarNaming"
 			},
 			{
 				"command": "vscAPIPrev.AlVarNameAll",
-				"title": "TIPSAALAllDocVarNaming"
+				"title": "JAMALAllDocVarNaming"
 			},
 			{
 				"command": "vscAPIPrev.BeginTrans",
-				"title": "TIPSA Translation Step 1: Load Xlf file"
+				"title": "JAM Translation Step 1: Load Xlf file"
 			},
 			{
 				"command": "vscAPIPrev.EditTrans",
-				"title": "TIPSA Translation Step 2: Edit traslation"
+				"title": "JAM Translation Step 2: Edit traslation"
 			},
 			{
 				"command": "vscAPIPrev.SaveTrans",
-				"title": "TIPSA Translation Step 3: Save traslation"
+				"title": "JAM Translation Step 3: Save traslation"
 			},
 			{
 				"command": "vscAPIPrev.CreateTransFile",
-				"title": "TIPSA Translation Step 4: Create final file"
+				"title": "JAM Translation Step 4: Create final file"
 			},
 			{
 				"command": "vscAPIPrev.AvoidImpWith",
-				"title": "TIPSA Put Rec prefix"
+				"title": "JAM Put Rec prefix"
 			},
 			{
 				"command": "vscAPIPrev.AplicationArea",
-				"title": "TIPSA Add AplicatioArea/DataCalsification"
+				"title": "JAM Add AplicatioArea/DataCalsification"
 			},
 			{
 				"command": "vscAPIPrev.MiscPruebas",
-				"title": "TIPSA Pruebas diversas para uso interno"
+				"title": "JAM Pruebas diversas para uso interno"
 			}			
 		]
 	},

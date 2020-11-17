@@ -52,11 +52,11 @@
 		"commands": [
 			{
 				"command": "vscAPIPrev.AlVarNameSel",
-				"title": "JAMALSelectionVarNaming"
+				"title": "JAM AL SelectionVarNaming"
 			},
 			{
 				"command": "vscAPIPrev.AlVarNameAll",
-				"title": "JAMALAllDocVarNaming"
+				"title": "JAM AL AllDocVarNaming"
 			},
 			{
 				"command": "vscAPIPrev.BeginTrans",

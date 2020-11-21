@@ -16,8 +16,9 @@ module.exports = {
 async function CreateTranslationJSON() {
 
 	var JSONTrans = [];
-	JSONTrans = ReadJSONTransFile(JSONTrans);
-	JSONTrans = await ProcessXlfFile('Select xlf file', JSONTrans);
+	DeleteJSONTransFile();
+	JSONTrans = await ProcessXlfFile('Select xlf file auto generated ENG', JSONTrans);	
+	JSONTrans = await ProcessXlfFilePreviousTrans('Select xlf file previous translation', JSONTrans);	
 	SaveJSONTransfile(JSONTrans);
 };
 
@@ -58,14 +59,42 @@ function WriteJSONTrans(linetext, JSONTrans, LastSourceText) {
 	}
 	return (LastSourceText);
 }
-function getJSONFileName() {
-	var returnedName = 'JSONTranslation.json';
-	const ExtConf = vscode.workspace.getConfiguration('');
-	if (ExtConf) {
-		returnedName = ExtConf.get('JSONTranslationFilename');
+async function ProcessXlfFilePreviousTrans(newtitle, JSONTrans) {
+	const options = {
+		canSelectMany: false,
+		openLabel: 'Open',
+		title: newtitle,
+		filters: {
+			'xlf': ['xlf'],
+		}
+	};
+	let fileUri = await vscode.window.showOpenDialog(options);
+	//vscode.window.showInformationMessage(fileUri[0].fsPath);
+	let XlfDoc = await vscode.workspace.openTextDocument(fileUri[0].fsPath);
+	var LastSourceText = '';
+	for (var i = 0; i < XlfDoc.lineCount; i++) {
+		var line = XlfDoc.lineAt(i);
+		LastSourceText = WriteJSONPeviousTrans(line.text, JSONTrans, LastSourceText);
 	}
-	return (returnedName);
+	return (JSONTrans);
 }
+
+function WriteJSONPeviousTrans(linetext, JSONTrans, LastSourceText) {
+	if (linetext.match('<source>')) {
+		var ReplacedLineText = linetext.replace(RexRemoveLabels, GetTranslationText);
+		return(ReplacedLineText);
+		//if (!JSONTrans.find(JSONTrans => JSONTrans.source == ReplacedLineText)) {
+		//	return (ReplacedLineText);			
+		//}
+	}
+	if (linetext.match('<target>')) {
+		var JSONSource = JSONTrans.find(Obj => Obj.source == LastSourceText);
+		if (JSONSource)
+			{JSONSource.target = linetext.replace(RexRemoveLabels, GetTranslationText);}
+	}
+	return (LastSourceText);
+}
+
 // @ts-ignore
 function GetTranslationText(fullMatch = '', startLabel = '', content = '', endLabel = '') {
 	return (content);
@@ -88,29 +117,44 @@ async function BeginEditTranslation() {
 	await vscode.workspace.applyEdit(WSEdit);
 }
 async function WriteElementToEdit(element, WSEdit, CurrDoc, lastLine) {
-	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), element.source.trim());
+	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), element.source);
 	await vscode.commands.executeCommand('editor.action.insertLineAfter');
 	lastLine = lastLine + 1;
-	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), TargetLabel + element.source.trim());
+	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), TargetLabel + element.source);
 	await vscode.commands.executeCommand('editor.action.insertLineAfter');
 	lastLine = lastLine + 1;
 	return (lastLine);
 }
 function ReadJSONTransFile(JSONTrans) {
 	const fs = require('fs');
-	const JSONFileURI = vscode.Uri.file(vscode.workspace.rootPath + '/' + getJSONFileName());
+	const JSONFileURI = GetFullPathFileJSONS();
 	if (fs.existsSync(JSONFileURI.fsPath)) {
 		var oldJSON = fs.readFileSync(JSONFileURI.fsPath, "utf-8");
 		JSONTrans = JSON.parse(oldJSON);
 	}
 	return (JSONTrans);
 }
-function SaveJSONTransfile(JSONTrans) {
+function DeleteJSONTransFile() {
+	
 	const fs = require('fs');
-	const JSONFileURI = vscode.Uri.file(vscode.workspace.rootPath + '/' + getJSONFileName());
+	const JSONFileURI = GetFullPathFileJSONS();
 	if (fs.existsSync(JSONFileURI.fsPath)) {
 		fs.unlinkSync(JSONFileURI.fsPath);
 	}
+}
+function GetFullPathFileJSONS()
+{
+	var returnedName = 'JSONTranslation.json';
+	const ExtConf = vscode.workspace.getConfiguration('');
+	if (ExtConf) {
+		returnedName = ExtConf.get('JSONTranslationFilename');
+	}
+	return(vscode.Uri.file(vscode.workspace.rootPath + '/.vscode/' + returnedName));
+}
+function SaveJSONTransfile(JSONTrans) {
+	const fs = require('fs');
+	DeleteJSONTransFile();
+	const JSONFileURI = GetFullPathFileJSONS();
 	fs.writeFileSync(JSONFileURI.fsPath, JSON.stringify(JSONTrans));
 }
 function SaveTranslationToJson() {

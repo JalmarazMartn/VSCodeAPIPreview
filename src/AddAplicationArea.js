@@ -51,7 +51,7 @@ async function lineProcess(LineNumber, CurrDoc, CurrElement = { ElementText: "",
 function MatchWithElement(lineText = '') {
     var ElementMatch = lineText.match(/\s*field\s*\(.*;.*\)/gi);
     if (!ElementMatch) { 
-        ElementMatch = lineText.match(/\s*action\s*\(.*\)/gi);        
+        ElementMatch = lineText.match(/\s*[^on]action\s*\(.*\)/gi);        
     }
     if (!ElementMatch) { 
         ElementMatch = lineText.match(/\s*part\s*\(.*\)/gi);        

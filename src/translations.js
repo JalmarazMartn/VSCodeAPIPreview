@@ -9,8 +9,7 @@ module.exports = {
 		CreateTranslationJSON();
 	},
 	EditTranslation: function () { BeginEditTranslation() },
-	SaveTranslation: function () { SaveTranslationToJson() },
-	CreateTranslation: function () { CreateTranslationXlf() }
+	SaveTranslation: function () { SaveTranslationToJsonAndCreateTranslationXlf()},
 
 }
 async function CreateTranslationJSON() {
@@ -100,14 +99,19 @@ function GetTranslationText(fullMatch = '', startLabel = '', content = '', endLa
 	return (content);
 }
 async function BeginEditTranslation() {
-	if (await ErrorIfNotEmptyDoc())
-	{return;}
-	var currEditor = vscode.window.activeTextEditor;
-	let CurrDoc = currEditor.document;
+	//let CurrDoc = await vscode.workspace.openTextDocument(vscode.Uri.parse("untitled:" + "*.xlf"));
+	let CurrDoc = await vscode.workspace.openTextDocument();
+	vscode.window.showTextDocument(CurrDoc, {preview: false});	
+	//if (await ErrorIfNotEmptyDoc())
+	//{return;}
+
+	//var currEditor = vscode.window.activeTextEditor;	
+	//let CurrDoc = currEditor.document;
 	var JSONTrans = [];
 	const WSEdit = new vscode.WorkspaceEdit;
 	JSONTrans = ReadJSONTransFile(JSONTrans);
-	let lastLine = CurrDoc.lineCount;
+	//let lastLine = CurrDoc.lineCount;
+	let lastLine = 0;
 	for (var i = 0; i < JSONTrans.length; i++) {
 		var element = JSONTrans[i];
 		if ((element.target == '') ||(element.target == element.source)) {
@@ -118,6 +122,7 @@ async function BeginEditTranslation() {
 }
 async function WriteElementToEdit(element, WSEdit, CurrDoc, lastLine) {
 	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), element.source);
+
 	await vscode.commands.executeCommand('editor.action.insertLineAfter');
 	lastLine = lastLine + 1;
 	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), TargetLabel + element.source);
@@ -157,6 +162,12 @@ function SaveJSONTransfile(JSONTrans) {
 	const JSONFileURI = GetFullPathFileJSONS();
 	fs.writeFileSync(JSONFileURI.fsPath, JSON.stringify(JSONTrans));
 }
+async function SaveTranslationToJsonAndCreateTranslationXlf()
+{
+	await SaveTranslationToJson();
+	await ClearCurrentDocument();
+	await CreateTranslationXlf();
+}
 function SaveTranslationToJson() {
 	var currEditor = vscode.window.activeTextEditor;
 	let CurrDoc = currEditor.document;
@@ -177,8 +188,21 @@ function SaveTranslationToJson() {
 	}
 	SaveJSONTransfile(JSONTrans);
 }
+async function ClearCurrentDocument() {
+	var currEditor = vscode.window.activeTextEditor;
+	let CurrDoc = currEditor.document;
+	const WSEdit = new vscode.WorkspaceEdit;	
+	const range = new vscode.Range(new vscode.Position(0,0),new vscode.Position(CurrDoc.lineCount,0));
+	await WSEdit.delete(CurrDoc.uri, range);		
+	await vscode.workspace.applyEdit(WSEdit);	
+	//await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+}
+
 async function CreateTranslationXlf() {
 	await WriteNewXlfFile('Select xlf file',);
+	//var currEditor = vscode.window.activeTextEditor;
+	//let CurrDoc = currEditor.document;
+	
 }
 async function WriteNewXlfFile(NewTitle = '') {
 	if (await ErrorIfNotEmptyDoc())
@@ -220,7 +244,6 @@ async function WriteNewXlfFile(NewTitle = '') {
 	await vscode.workspace.applyEdit(WSEdit);
 }
 async function WriteNewXlfLine(LineText = '', WSEdit, CurrDoc, lastLine) {
-
 	await WSEdit.insert(CurrDoc.uri, new vscode.Position(lastLine, 0), LineText);
 	await vscode.commands.executeCommand('editor.action.insertLineAfter');
 	lastLine = lastLine + 1;

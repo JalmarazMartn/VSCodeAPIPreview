@@ -17,7 +17,6 @@
 		"onCommand:vscAPIPrev.BeginTrans",
 		"onCommand:vscAPIPrev.EditTrans",
 		"onCommand:vscAPIPrev.SaveTrans",
-		"onCommand:vscAPIPrev.CreateTransFile",
 		"onCommand:vscAPIPrev.AvoidImpWith",
 		"onCommand:vscAPIPrev.AplicationArea",
 		"onCommand:vscAPIPrev.MiscPruebas"
@@ -52,15 +51,15 @@
 		"commands": [
 			{
 				"command": "vscAPIPrev.AlVarNameSel",
-				"title": "JAM AL SelectionVarNaming"
+				"title": "JAM AL Selection Variable Naming"
 			},
 			{
 				"command": "vscAPIPrev.AlVarNameAll",
-				"title": "JAM AL AllDocVarNaming"
+				"title": "JAM AL Document Variable Naming"
 			},
 			{
 				"command": "vscAPIPrev.BeginTrans",
-				"title": "JAM Translation Step 1: Load Xlf file"
+				"title": "JAM Translation Step 1: Load Xlf files"
 			},
 			{
 				"command": "vscAPIPrev.EditTrans",
@@ -68,11 +67,7 @@
 			},
 			{
 				"command": "vscAPIPrev.SaveTrans",
-				"title": "JAM Translation Step 3: Save traslation"
-			},
-			{
-				"command": "vscAPIPrev.CreateTransFile",
-				"title": "JAM Translation Step 4: Create final file"
+				"title": "JAM Translation Step 3: Save traslation and create here the destination xlf file"
 			},
 			{
 				"command": "vscAPIPrev.AvoidImpWith",

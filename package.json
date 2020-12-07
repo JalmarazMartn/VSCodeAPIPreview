@@ -71,7 +71,7 @@
 			},
 			{
 				"command": "vscAPIPrev.AvoidImpWith",
-				"title": "JAM Put Rec prefix"
+				"title": "Deprecated JAM Put Rec prefix"
 			},
 			{
 				"command": "vscAPIPrev.AplicationArea",
@@ -79,7 +79,7 @@
 			},
 			{
 				"command": "vscAPIPrev.MiscPruebas",
-				"title": "JAM Pruebas diversas para uso interno"
+				"title": "Deprecated JAM Pruebas diversas para uso interno"
 			}			
 		]
 	},

@@ -23,8 +23,10 @@ module.exports = {
 		for (var i = 0; i < CurrDoc.lineCount; i++) {
 			await lineProcess(i, CurrDoc);
 		}
-
-	}
+	},
+	GetRegExpVarDeclaration: function (){
+		return(GetRegExpVarDeclaration());
+	}	
 
 }
 async function lineProcess(i, CurrDoc) {

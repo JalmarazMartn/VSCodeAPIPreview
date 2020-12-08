@@ -22,7 +22,7 @@ async function GetDocumentSymbols()
     //    }
     //);    
     let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider"," ");
-    console.log('jdjd');
+
 }
 async function ExecuteCommWithUriAndPos(CommandToExec='')
 {

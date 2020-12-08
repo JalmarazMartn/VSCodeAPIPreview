@@ -57,6 +57,13 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposableAplicationArea);	
 
+	let SetObjectPrefix = vscode.commands.registerCommand('vscAPIPrev.SetObjectPrefix', function () {
+		const PutPrefix = require('./src/PutPrefix.js');		
+		PutPrefix.SetPrefix();
+		
+	});
+	context.subscriptions.push(SetObjectPrefix);	
+
 
 let disposableSelection = vscode.commands.registerCommand('vscAPIPrev.AlVarNameSel', function () {
 	// The code you place here will be executed every time your command is executed

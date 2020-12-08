@@ -1,8 +1,9 @@
 const vscode = require('vscode');
 module.exports = {
     Pruebas: async function () {
+        GetDocumentSymbols();
         //GetSymbolsInfo();
-        GetExtensionConf();
+        //GetExtensionConf();
     }
 }
 async function GetSymbolsInfo()
@@ -12,6 +13,16 @@ async function GetSymbolsInfo()
     await ExecuteCommWithUriAndPos('vscode.executeTypeDefinitionProvider');
     await ExecuteCommWithUriAndPos('vscode.executeImplementationProvider');
     await ExecuteCommWithUriAndPos('vscode.executeReferenceProvider');
+}
+async function GetDocumentSymbols()
+{    
+    //vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider","Whse. Asistant Mngt").then(
+    //    function (symbols) {
+    //        console.log('symbols');
+    //    }
+    //);    
+    let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider"," ");
+    console.log('jdjd');
 }
 async function ExecuteCommWithUriAndPos(CommandToExec='')
 {

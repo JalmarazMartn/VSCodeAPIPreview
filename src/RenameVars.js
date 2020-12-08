@@ -57,16 +57,6 @@ async function MatchProcess(element, original = '', lineNumber = 0) {
 	return vscode.window.activeTextEditor.document.lineAt(lineNumber).text;
 }
 
-function ReplaceVarName(FullMatch, DelimiterStart, IsByRef, Newline, Spaces, VarName, VarType, VarSubtype, FinalDec) {
-	if (!VarType) { return FullMatch; }
-	if (!VarSubtype) { return FullMatch; }
-
-	var NewVarName = GetNewVarName();
-	var NewText = DelimiterStart + IsByRef + Newline + Spaces + NewVarName
-		+ ':' + VarType + ' ' + VarSubtype + FinalDec;
-
-	return (NewText);
-}
 function GetNewVarName(VarSubtype = '') {
 	//var NewVarName = VarSubtype.replace(/\s|"|temporary|\/|\.|-/gi, '');
 	var NewVarName = VarSubtype.replace(/temporary|[^a-zA-Z0-9]/gi, '');

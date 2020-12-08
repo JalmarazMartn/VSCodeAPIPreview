@@ -19,6 +19,7 @@
 		"onCommand:vscAPIPrev.SaveTrans",
 		"onCommand:vscAPIPrev.AvoidImpWith",
 		"onCommand:vscAPIPrev.AplicationArea",
+		"onCommand:vscAPIPrev.SetObjectPrefix",		
 		"onCommand:vscAPIPrev.MiscPruebas"
 	],
 	"main": "./extension.js",
@@ -45,6 +46,11 @@
 					"type": "string",
 					"default": "es-ES",
 					"description": "Temporal translation file"
+				},
+				"AppPrefix": {
+					"type": "string",
+					"default": "",
+					"description": "Application prefix for objects"
 				}
 			}
 		},
@@ -80,7 +86,11 @@
 			{
 				"command": "vscAPIPrev.MiscPruebas",
 				"title": "Deprecated JAM Pruebas diversas para uso interno"
-			}			
+			},						
+			{
+				"command": "vscAPIPrev.SetObjectPrefix",
+				"title": "JAM Put Object prefix in object and vars"
+			}
 		]
 	},
 	"scripts": {

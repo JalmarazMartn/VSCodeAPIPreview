@@ -19,14 +19,16 @@ async function ProcessObjectDecl(CurrDoc)
     const AppPrefix = await GetAppPrefix()
     if (AppPrefix =='')
     {return}
+    if (ObjDeclaration.indexOf(AppPrefix)>=0)
+    {return}
     var ObjDecMatches = ObjDeclaration.match(ObjDeclarationRegExp);
     if (!ObjDecMatches)
     {
         return;
     }
     const ObjName = ObjDecMatches[1].replace(/"/g,'');
-    if (ObjName.indexOf('extends') > 0)
-    {return}
+    //if (ObjName.indexOf('extends') > 0)
+    //{return}
     if (ObjName.indexOf(await GetAppPrefix()) > 0)
     {return}
     const ObjNameBegin = ObjDeclaration.indexOf(ObjName);
@@ -43,31 +45,35 @@ async function ProcessBodyDecl(CurrDoc)
     if (AppPrefix=='')
     {return}
     for (var i = 1; i < CurrDoc.lineCount; i++) {
-        var original = CurrDoc.lineAt(i);
-        var varDecMatches = original.match(GetRegExpVarDeclaration());
+        var original = CurrDoc.lineAt(i).text;
+        var varDecMatches = original.match(GetRegExpVarDeclaration(true));
         if (varDecMatches) { 
-            for (var i = 0; i < Object.keys(varDecMatches).length; i++) {
-                var element = varDecMatches[i];
-                await MatchProcess(element,i,CurrDoc);
-                return 
+            for (var j = 0; j < Object.keys(varDecMatches).length; j++) {
+                var element = varDecMatches[j];
+                await MatchProcess(element,j,CurrDoc);
+                return//quitar
             }
         }
     }
 }
-async function MatchProcess(Element,LineNumber = 0,CurrDoc) {
-	const singleMatch = Element.match(GetRegExpVarDeclaration());
-    const VarSubtype = singleMatch[7].replace(/"/g,'');
+async function MatchProcess(Element,LineNumber = 0,CurrDoc) {    
+    const singleMatch = Element.match(GetRegExpVarDeclaration(false));
+    var VarSubtype = singleMatch[7];
+    VarSubtype = VarSubtype.replace(/"/g,'');
     const AppPrefix = await GetAppPrefix(); 
     if (VarSubtype.indexOf(AppPrefix)==0)
     {return}
     if (await SymbolExists(VarSubtype))
     {return}
+
     if (await SymbolExists(GetSubTypeWithPrefix(AppPrefix,VarSubtype)))
-    {ChangeSubtype(VarSubtype,CurrDoc,LineNumber);}
+    {            
+        await ChangeSubtype(VarSubtype,CurrDoc,LineNumber);}
 }
 async function SymbolExists(SymbolName='')
 {
     let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider",SymbolName);    
+    console.log(SymbolName + ' 6');    
     if (symbols.length >= 1)
     {return true}
     return false;   
@@ -87,7 +93,7 @@ async function ChangeSubtype(VarSubtype='',CurrDoc,LineNumber=0)
 }
 function GetSubTypeWithPrefix(AppPrefix='',Subtype='')
 {
-    return AppPrefix + ' ' + Subtype;
+    return AppPrefix + ' ' + Subtype.trim();
 }
 
 async function GetAppPrefix()
@@ -103,9 +109,8 @@ async function GetAppPrefix()
     }
     return(AppPrefix);    
 }
-function GetRegExpVarDeclaration()
+function GetRegExpVarDeclaration(IsGlobal=false)
 {
-    const RenameVars = require('./RenameVars.js');		
-    return(RenameVars.GetRegExpVarDeclaration());
-
+    const RenameVars = require('./RenameVars.js');
+    return(RenameVars.GetRegExpVarDeclaration(IsGlobal));
 }

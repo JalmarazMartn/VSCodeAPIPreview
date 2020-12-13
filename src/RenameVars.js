@@ -24,8 +24,8 @@ module.exports = {
 			await lineProcess(i, CurrDoc);
 		}
 	},
-	GetRegExpVarDeclaration: function (){
-		return(GetRegExpVarDeclaration());
+	GetRegExpVarDeclaration: function (IsGlobal=false){
+		return(GetRegExpVarDeclaration(IsGlobal));
 	}	
 
 }

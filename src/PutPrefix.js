@@ -50,8 +50,7 @@ async function ProcessBodyDecl(CurrDoc)
         if (varDecMatches) { 
             for (var j = 0; j < Object.keys(varDecMatches).length; j++) {
                 var element = varDecMatches[j];
-                await MatchProcess(element,j,CurrDoc);
-                return//quitar
+                await MatchProcess(element,i,CurrDoc);
             }
         }
     }
@@ -59,12 +58,12 @@ async function ProcessBodyDecl(CurrDoc)
 async function MatchProcess(Element,LineNumber = 0,CurrDoc) {    
     const singleMatch = Element.match(GetRegExpVarDeclaration(false));
     var VarSubtype = singleMatch[7];
-    VarSubtype = VarSubtype.replace(/"/g,'');
+    VarSubtype = VarSubtype.replace(/"/g,'').trim();
     const AppPrefix = await GetAppPrefix(); 
     if (VarSubtype.indexOf(AppPrefix)==0)
     {return}
-    if (await SymbolExists(VarSubtype))
-    {return}
+    //if (await SymbolExists(VarSubtype))
+    //{return}
 
     if (await SymbolExists(GetSubTypeWithPrefix(AppPrefix,VarSubtype)))
     {            
@@ -73,7 +72,6 @@ async function MatchProcess(Element,LineNumber = 0,CurrDoc) {
 async function SymbolExists(SymbolName='')
 {
     let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider",SymbolName);    
-    console.log(SymbolName + ' 6');    
     if (symbols.length >= 1)
     {return true}
     return false;   

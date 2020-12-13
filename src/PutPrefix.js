@@ -45,30 +45,51 @@ async function ProcessBodyDecl(CurrDoc)
     for (var i = 1; i < CurrDoc.lineCount; i++) {
         var original = CurrDoc.lineAt(i);
         var varDecMatches = original.match(GetRegExpVarDeclaration());
-        if (!varDecMatches) { return };
-        for (var i = 0; i < Object.keys(varDecMatches).length; i++) {
-            var element = varDecMatches[i];
-            original = await MatchProcess(element, original, i);
+        if (varDecMatches) { 
+            for (var i = 0; i < Object.keys(varDecMatches).length; i++) {
+                var element = varDecMatches[i];
+                await MatchProcess(element,i,CurrDoc);
+                return 
+            }
         }
     }
 }
-async function MatchProcess(element, original = '', lineNumber = 0) {
-	const singleMatch = element.match(GetRegExpVarDeclaration());
+async function MatchProcess(Element,LineNumber = 0,CurrDoc) {
+	const singleMatch = Element.match(GetRegExpVarDeclaration());
     const VarSubtype = singleMatch[7].replace(/"/g,'');
-    if (VarSubtype.indexOf(GetAppPrefix())==0)
-    {return original}
-    if (await ExisteSymbolWithPrefix(VarSubtype))
-    {}
+    const AppPrefix = await GetAppPrefix(); 
+    if (VarSubtype.indexOf(AppPrefix)==0)
+    {return}
+    if (await SymbolExists(VarSubtype))
+    {return}
+    if (await SymbolExists(GetSubTypeWithPrefix(AppPrefix,VarSubtype)))
+    {ChangeSubtype(VarSubtype,CurrDoc,LineNumber);}
 }
-async function ExisteSymbolWithPrefix(VarSubtype='')
+async function SymbolExists(SymbolName='')
 {
-    let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider",await GetAppPrefix()+ ' ' +VarSubtype);    
+    let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider",SymbolName);    
     if (symbols.length >= 1)
     {return true}
-    
+    return false;   
 }
-async function ChangeSubtype()
-{}
+async function ChangeSubtype(VarSubtype='',CurrDoc,LineNumber=0)
+{
+    const WSEdit = new vscode.WorkspaceEdit;
+    const AppPrefix = await GetAppPrefix();
+    const PositionOpen = new vscode.Position(LineNumber,
+        CurrDoc.lineAt(LineNumber).text.indexOf(VarSubtype));        
+    const PositionClose = new vscode.Position(LineNumber,
+        CurrDoc.lineAt(LineNumber).text.indexOf(VarSubtype) + VarSubtype.length);        
+        
+    WSEdit.replace(CurrDoc.uri, new vscode.Range(PositionOpen, PositionClose),
+    GetSubTypeWithPrefix(AppPrefix,VarSubtype));
+    await vscode.workspace.applyEdit(WSEdit);
+}
+function GetSubTypeWithPrefix(AppPrefix='',Subtype='')
+{
+    return AppPrefix + ' ' + Subtype;
+}
+
 async function GetAppPrefix()
 {
     const ExtConf = vscode.workspace.getConfiguration('');

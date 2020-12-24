@@ -82,8 +82,29 @@ let disposableAvoidImpWith = vscode.commands.registerCommand('vscAPIPrev.AvoidIm
 context.subscriptions.push(disposableAvoidImpWith);
 
 let disposableMiscPruebas = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas', function () {
-	const PruebaSymbol = require('./src/Pruebas.js');
-	PruebaSymbol.Pruebas();
+	const translations = require('./src/translations.js');				
+    const WebviewTranslations = vscode.window.createWebviewPanel(
+		'Translations',
+		'Translations: Set the target and push -Save- when is done',
+		vscode.ViewColumn.One,
+		{
+		  enableScripts: true
+		}
+	  );
+	  WebviewTranslations.webview.onDidReceiveMessage(
+		message => {
+		  switch (message.command) {
+			case 'Save':
+				translations.SaveHtmlTranslation(message.text);
+				WebviewTranslations.dispose();
+			  return;
+
+			}
+        },
+        undefined,
+        context.subscriptions      
+	);
+WebviewTranslations.webview.html = translations.GetTranslationsHtml();
 });
 context.subscriptions.push(disposableMiscPruebas);
 }

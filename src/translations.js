@@ -10,7 +10,8 @@ module.exports = {
 	},
 	EditTranslation: function () { BeginEditTranslation() },
 	SaveTranslation: function () { SaveTranslationToJsonAndCreateTranslationXlf()},
-
+	GetTranslationsHtml: function() {return GetTranslationsHtml()},
+	SaveHtmlTranslation: function(HtmlTranslation) {SaveHtmlTranslation(HtmlTranslation)}	
 }
 async function CreateTranslationJSON() {
 
@@ -282,4 +283,49 @@ async function ErrorIfNotEmptyDoc()
 }
 
 	return false;
+}
+function GetTranslationsHtml()
+{
+	let FinalTable = '';
+	FinalTable = 
+	`
+	<body>
+	<table id="table" style="width:100%">
+  <th>Source</th><th>Target</th>`
+ + GetHtmlTableContent() +
+  `</table>	
+  <br></br>
+  <Button onclick="Save()">Save and close</Button>
+  <Script>
+  function Save() {
+      //document.getElementById('Target1').innerHTML = document.getElementById('Source1').innerHTML;
+      const vscode = acquireVsCodeApi();
+    vscode.postMessage({
+      command: "Save",
+      text: document.getElementById('table').innerHTML
+    });
+	}
+  </Script>
+  </body>
+  </html>   	
+	`
+	return FinalTable;
+}
+function SaveHtmlTranslation(HtmlTranslation = '')
+{
+	console.log(HtmlTranslation);
+}
+function GetHtmlTableContent()
+{
+	let HtmlTableContent = `
+	<tr>
+	<td id=1>Source</td>
+	<td><div contenteditable>Target</div></td>
+	</tr>
+	<tr>
+	<td id=1>Source</td>
+	<td><div contenteditable>Target2</div></td>
+	</tr>
+	`
+	return HtmlTableContent;
 }

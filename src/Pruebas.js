@@ -1,7 +1,10 @@
 const vscode = require('vscode');
 module.exports = {
-    Pruebas: async function () {
-        GetDocumentSymbols();
+    Pruebas: async function (context) {
+		const translation = require('./translations.js');		
+		translation.EditTranslationHtml(context);
+
+        //GetDocumentSymbols();
         //GetSymbolsInfo();
         //GetExtensionConf();
     }

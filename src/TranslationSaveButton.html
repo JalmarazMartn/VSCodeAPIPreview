@@ -1,0 +1,21 @@
+	<body>
+	<table id="table" style="width:100%">
+  <th>Source</th><th>Target</th>
+  <tr><td>Source</td>
+  <td><div contenteditable>Target</div></td>
+  </tr>
+  </table>
+  <br></br>
+  <Button onclick="Save()">Save</Button>
+  <Script>
+  function Save() {
+      //document.getElementById('Target1').innerHTML = document.getElementById('Source1').innerHTML;
+      const vscode = acquireVsCodeApi();
+    vscode.postMessage({
+      command: "Save",
+      text: document.getElementById('table').innerHTML
+    });
+	}
+  </Script>
+  </body>
+  </html>   

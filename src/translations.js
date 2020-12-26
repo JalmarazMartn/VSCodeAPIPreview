@@ -2,6 +2,18 @@ const vscode = require('vscode');
 const TargetLabel = 'Target==>';
 const RexRemoveLabels = /\s*(<target>|<source>)(\s*.*)(<\/target>|<\/source>)/gm;
 const RexLanguageLine = /(source-language=".*"\s*target-language=")([a-z\-]*)(")/gmi;
+const HtmlStartTagSource = '<td>';
+const HtmlStartTagTarget = '<td><div contenteditable="">';
+const HtmlEndTagSource = '</td>';
+const HtmlEndTagTarget = '</div></td>';
+const UngreedySreachPattern = '(.*?)';
+const TableRowsPattern = 
+EscapeRegExp(HtmlStartTagSource)+ UngreedySreachPattern
++EscapeRegExp(HtmlEndTagSource)
++EscapeRegExp(HtmlStartTagTarget)+UngreedySreachPattern
++EscapeRegExp(HtmlEndTagTarget)	
+;
+
 //
 module.exports = {
 	LoadXlfTranslations: function (
@@ -167,7 +179,7 @@ async function SaveTranslationToJsonAndCreateTranslationXlf()
 {
 	await SaveTranslationToJson();
 	await ClearCurrentDocument();
-	await CreateTranslationXlf();
+	await WriteNewXlfFile('Select xlf file');
 }
 function SaveTranslationToJson() {
 	var currEditor = vscode.window.activeTextEditor;
@@ -199,12 +211,6 @@ async function ClearCurrentDocument() {
 	//await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 }
 
-async function CreateTranslationXlf() {
-	await WriteNewXlfFile('Select xlf file',);
-	//var currEditor = vscode.window.activeTextEditor;
-	//let CurrDoc = currEditor.document;
-	
-}
 async function WriteNewXlfFile(NewTitle = '') {
 	if (await ErrorIfNotEmptyDoc())
 	{return;}
@@ -251,7 +257,6 @@ async function WriteNewXlfLine(LineText = '', WSEdit, CurrDoc, lastLine) {
 	return (lastLine);
 }
 function GetLanguageText(fullMatch = '', startLabel = '', content = '', endLabel = '') {
-	console.log(startLabel + GetTargetLanguage() + endLabel);
 	return (startLabel + GetTargetLanguage() + endLabel);
 }
 function GetTargetLanguage() {
@@ -311,21 +316,52 @@ function GetTranslationsHtml()
 	`
 	return FinalTable;
 }
-function SaveHtmlTranslation(HtmlTranslation = '')
-{
-	console.log(HtmlTranslation);
-}
 function GetHtmlTableContent()
 {
-	let HtmlTableContent = `
-	<tr>
-	<td id=1>Source</td>
-	<td><div contenteditable>Target</div></td>
-	</tr>
-	<tr>
-	<td id=1>Source</td>
-	<td><div contenteditable>Target2</div></td>
-	</tr>
-	`
+	let HtmlTableContent = '';	
+	var JSONTrans = [];
+	JSONTrans = ReadJSONTransFile(JSONTrans);	
+	for (var i = 0; i < JSONTrans.length; i++) {		
+		var element = JSONTrans[i];
+		if ((element.target == '') ||(element.target == element.source)) {
+			HtmlTableContent = HtmlTableContent + 
+			'<tr>' +
+			String.prototype.concat(
+			HtmlStartTagSource,
+			element.source) +
+			HtmlEndTagSource +
+			String.prototype.concat(			
+			HtmlStartTagTarget
+			,element.source) +
+			HtmlEndTagTarget +
+			'</tr>';
+		}
+	}
 	return HtmlTableContent;
 }
+function SaveHtmlTranslation(HtmlTranslation = '')
+{
+	const TableRowsRegExp = new RegExp(TableRowsPattern,'gm');
+	const RowsMatches = HtmlTranslation.match(TableRowsRegExp);
+	if (!RowsMatches)
+	{
+		return;
+	}
+	var JSONTrans = [];
+	JSONTrans = ReadJSONTransFile(JSONTrans);
+	for (var i = 0; i < Object.keys(RowsMatches).length; i++) {
+		UpdateTranslationWithHtmlRow(RowsMatches[i],JSONTrans);
+	}		
+	SaveJSONTransfile(JSONTrans);	
+	WriteNewXlfFile('Select xlf file',);	
+}
+function UpdateTranslationWithHtmlRow(HtmlRow='',JSONTrans = [])
+{
+	const TableRowsRegExp = new RegExp(TableRowsPattern,'');
+	let SingleMatch = HtmlRow.match(TableRowsRegExp);
+	var JSONSource = JSONTrans.find(Obj => Obj.source == SingleMatch[1]);
+	JSONSource.target = SingleMatch[2];	
+}
+function EscapeRegExp(string) {
+	return string.replace(/[.*+\-?^${}()|[\]\\\/]/g,'\\$&'); // $& significa toda la cadena coincidente
+  }

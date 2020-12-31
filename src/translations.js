@@ -23,7 +23,7 @@ module.exports = {
 	EditTranslation: function () { BeginEditTranslation() },
 	SaveTranslation: function () { SaveTranslationToJsonAndCreateTranslationXlf()},
 	GetTranslationsHtml: function() {return GetTranslationsHtml()},
-	SaveHtmlTranslation: function(HtmlTranslation) {SaveHtmlTranslation(HtmlTranslation)}	
+	EditHtmlTranslation: function(context) {EditHtmlTranslation(context)}	
 }
 async function CreateTranslationJSON() {
 
@@ -288,6 +288,31 @@ async function ErrorIfNotEmptyDoc()
 }
 
 	return false;
+}
+function EditHtmlTranslation(context)
+{
+    const WebviewTranslations = vscode.window.createWebviewPanel(
+		'Translations',
+		'Translations: Set the target and push -Save- when is done',
+		vscode.ViewColumn.One,
+		{
+		  enableScripts: true
+		}
+	  );
+	  WebviewTranslations.webview.onDidReceiveMessage(
+		message => {
+		  switch (message.command) {
+			case 'Save':
+				SaveHtmlTranslation(message.text);
+				WebviewTranslations.dispose();
+			  return;
+
+			}
+        },
+        undefined,
+        context.subscriptions      
+	);
+WebviewTranslations.webview.html = GetTranslationsHtml();	
 }
 function GetTranslationsHtml()
 {

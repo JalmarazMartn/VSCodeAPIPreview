@@ -4,10 +4,18 @@
 	"description": "Exploring VSCode API",
 	"publisher": "Jalmaraz",
 	"version": "0.0.1",
-	"repository": "https://github.com/JalmarazMartn/AlmarazALUtilities",
 	"engines": {
 		"vscode": "^1.49.0"
 	},
+	"author": {
+		"name": "Jesús Almaraz martín",
+		"email": "JalmarazMartn@gmail.com"
+	},
+	"repository": {
+        "type": "git",
+        "url": "https://github.com/JalmarazMartn/AlmarazALUtilities"
+    },
+
 	"categories": [
 		"Other"
 	],

@@ -56,7 +56,7 @@ async function ProcessBodyDecl(CurrDoc)
     }
 }
 async function MatchProcess(Element,LineNumber = 0,original = '') {    
-    const singleMatch = Element.match(GetRegExpVarDeclaration(false));
+    const singleMatch = Element.match(GetRegExpVarDeclaration(false));    
     var VarSubtype = singleMatch[7];
     VarSubtype = VarSubtype.replace(/"/g,'').trim();
     const AppPrefix = await GetAppPrefix(); 
@@ -67,24 +67,35 @@ async function MatchProcess(Element,LineNumber = 0,original = '') {
 
     if (await SymbolExists(GetSubTypeWithPrefix(AppPrefix,VarSubtype)))
     {            
-        original = await ChangeSubtype(VarSubtype,original,LineNumber);}
+        original = await ChangeSubtype(singleMatch[6],VarSubtype,original,LineNumber);}
     return original;
 }
 async function SymbolExists(SymbolName='')
 {
     let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider",SymbolName);    
     if (symbols.length >= 1)
-    {return true}
+    { 
+       const SymbolName = symbols[0].name;
+       const MatchExt = SymbolName.match(/Tableextension|Pageextension/i);
+       if (MatchExt)
+       {
+           return false;
+       }
+        return true;}
     return false;   
 }
-async function ChangeSubtype(VarSubtype='',original = '',LineNumber=0)
+async function ChangeSubtype(VarType= '',VarSubtype='',original = '',LineNumber=0)
 {
     const WSEdit = new vscode.WorkspaceEdit;
     const AppPrefix = await GetAppPrefix();
+    const RegExCompletDec = new RegExp(VarType+'\\s+"{0,1}'+VarSubtype);
+    const MatchCompleteDec = original.match(RegExCompletDec);
+    const InitialPosition  = original.indexOf(MatchCompleteDec[0]) + MatchCompleteDec[0].indexOf(VarSubtype);
     const PositionOpen = new vscode.Position(LineNumber,
-        original.indexOf(VarSubtype));        
+        InitialPosition);        
     const PositionClose = new vscode.Position(LineNumber,
-        original.indexOf(VarSubtype) + VarSubtype.length);        
+        InitialPosition + VarSubtype.length); 
+    
         
     WSEdit.replace(vscode.window.activeTextEditor.document.uri, new vscode.Range(PositionOpen, PositionClose),
     GetSubTypeWithPrefix(AppPrefix,VarSubtype));

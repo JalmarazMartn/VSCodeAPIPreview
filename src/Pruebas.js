@@ -1,4 +1,6 @@
 const vscode = require('vscode');
+//let ALObjects = [];
+let ALObjects = [];
 module.exports = {
     Pruebas: async function (context) {
 		//const translation = require('./translations.js');		
@@ -10,7 +12,11 @@ module.exports = {
         //GetExtensionConf();
         //GetExtensions();
         //GetALExtension();
-        GetALObjects();
+        //GetALObjects();
+        ShowOuputChannel();
+    },
+    GetALObjects: async function(){
+        return(await GetALObjects());
     }
 }
 async function GetSymbolsInfo()
@@ -115,13 +121,26 @@ const getMethods = (obj) => {
   async function GetALObjects()
   {
     const ALExtension = vscode.extensions.getExtension('martonsagi.al-object-designer');    
+    if (ALObjects.length > 0)
+    {
+        return ALObjects
+    }
     if (!(ALExtension.isActive))
-    {ALExtension.activate}
-    const ALAPI = ALExtension.exports;
+    {await ALExtension.activate}
+    const ALAPI = await ALExtension.exports;
     if (ALAPI)
     {
-        const ALObjects = await ALAPI.ALObjectCollector._getData();
+        ALObjects = await ALAPI.ALObjectCollector._getData();
         console.log(ALObjects.length);
-        return ALObjects;
+       // Object.freeze(ALObjects);       
     }
+    return ALObjects;
+  }
+  async function ShowOuputChannel()
+  {
+    const OutputChannel = vscode.window.createOutputChannel(`Output Channel`);
+    OutputChannel.appendLine('Getting objects');
+    const LocalObjects = await GetALObjects();
+    OutputChannel.appendLine('Objects: ' + LocalObjects.length);
+    OutputChannel.show();
   }

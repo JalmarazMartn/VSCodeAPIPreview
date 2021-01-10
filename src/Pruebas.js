@@ -13,7 +13,8 @@ module.exports = {
         //GetExtensions();
         //GetALExtension();
         //GetALObjects();
-        ShowOuputChannel();
+        //ShowALObjectsOuputChannel();
+        GetDiagnostics();
     },
     GetALObjects: async function(){
         return(await GetALObjects());
@@ -120,11 +121,11 @@ const getMethods = (obj) => {
   }
   async function GetALObjects()
   {
-    const ALExtension = vscode.extensions.getExtension('martonsagi.al-object-designer');    
     if (ALObjects.length > 0)
     {
         return ALObjects
     }
+    const ALExtension = vscode.extensions.getExtension('martonsagi.al-object-designer');        
     if (!(ALExtension.isActive))
     {await ALExtension.activate}
     const ALAPI = await ALExtension.exports;
@@ -136,11 +137,36 @@ const getMethods = (obj) => {
     }
     return ALObjects;
   }
-  async function ShowOuputChannel()
+  async function ShowALObjectsOuputChannel()
   {
     const OutputChannel = vscode.window.createOutputChannel(`Output Channel`);
     OutputChannel.appendLine('Getting objects');
     const LocalObjects = await GetALObjects();
     OutputChannel.appendLine('Objects: ' + LocalObjects.length);
     OutputChannel.show();
+  }
+  function GetDiagnostics()
+  {
+      const AppUri = vscode.workspace.workspaceFile;
+      const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
+      let Problems = [];
+      for (let i = 0; i < AppDiagnostics.length; i++) {
+          for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
+            let Problem = AppDiagnostics[i][1][j];
+            let ProblemRange = Problem.range;
+              Problems.push(
+                  {
+                    FilePath: AppDiagnostics[i][0].path,
+                    StarTLine: ProblemRange.start.line,
+                    StartColumn: ProblemRange.start.character,
+                    EndLine: ProblemRange.end.line,
+                    EndColumn: ProblemRange.end.character,
+                    MessageCode: Problem.code,
+                    MessageDescription: Problem.message,
+                    Severity: Problem.severity
+                            })
+          }
+      }
+    console.log(Problems);
+    return Problems;
   }

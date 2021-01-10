@@ -20,84 +20,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscAPIPrev.AlVarNameSel",
-		"onCommand:vscAPIPrev.AlVarNameAll",
-		"onCommand:vscAPIPrev.BeginTrans",
-		"onCommand:vscAPIPrev.EditTrans",
-		"onCommand:vscAPIPrev.SaveTrans",
-		"onCommand:vscAPIPrev.AvoidImpWith",
-		"onCommand:vscAPIPrev.AplicationArea",
-		"onCommand:vscAPIPrev.SetObjectPrefix",		
 		"onCommand:vscAPIPrev.MiscPruebas"
 	],
 	"main": "./extension.js",
 	"contributes": {
-		"configuration": {
-			"title": "vscAPIPrev",
-			"properties": {
-				"CharsFrom": {
-					"type": "string",
-					"default": "áéíóúÁÉÍÓÚ",
-					"description": "Chars to substitute in AL Naming"
-				},
-				"CharsTo": {
-					"type": "string",
-					"default": "aeiouAEIOU",
-					"description": "Chars to substitute in AL Naming"
-				},
-				"JSONTranslationFilename": {
-					"type": "string",
-					"default": "JSONTranslation.json",
-					"description": "Temporal translation file"
-				},
-				"TargetLanguage": {
-					"type": "string",
-					"default": "es-ES",
-					"description": "Temporal translation file"
-				},
-				"AppPrefix": {
-					"type": "string",
-					"default": "",
-					"description": "Application prefix for objects"
-				}
-			}
-		},
 		"commands": [
-			{
-				"command": "vscAPIPrev.AlVarNameSel",
-				"title": "JAM AL Selection Variable Naming"
-			},
-			{
-				"command": "vscAPIPrev.AlVarNameAll",
-				"title": "JAM AL Document Variable Naming"
-			},
-			{
-				"command": "vscAPIPrev.BeginTrans",
-				"title": "JAM Translation Step 1: Load Xlf files"
-			},
-			{
-				"command": "vscAPIPrev.EditTrans",
-				"title": "JAM Translation Step 2: Edit traslation"
-			},
-			{
-				"command": "vscAPIPrev.SaveTrans",
-				"title": "JAM Translation Step 3: Save traslation and create here the destination xlf file"
-			},
-			{
-				"command": "vscAPIPrev.AvoidImpWith",
-				"title": "Deprecated JAM Put Rec prefix"
-			},
-			{
-				"command": "vscAPIPrev.AplicationArea",
-				"title": "JAM Add AplicatioArea/DataCalsification"
-			},
 			{
 				"command": "vscAPIPrev.MiscPruebas",
 				"title": "Deprecated JAM Pruebas diversas para uso interno"
-			},						
-			{
-				"command": "vscAPIPrev.SetObjectPrefix",
-				"title": "JAM Put Object prefix in object and vars"
 			}
 		]
 	},

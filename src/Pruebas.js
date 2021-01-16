@@ -14,7 +14,8 @@ module.exports = {
         //GetALExtension();
         //GetALObjects();
         //ShowALObjectsOuputChannel();
-        GetDiagnostics();
+        //GetDiagnostics();
+        ReadLargeFile();
     },
     GetALObjects: async function(){
         return(await GetALObjects());
@@ -170,3 +171,35 @@ const getMethods = (obj) => {
     console.log(Problems);
     return Problems;
   }
+async function ReadLargeFile() {
+	const options = {
+		canSelectMany: false,
+		openLabel: 'Open',
+		title: 'Test large file',
+		filters: {
+			'xlf': ['xlf'],
+		}
+	};
+	let fileUri = await vscode.window.showOpenDialog(options);
+
+    var fs = require('fs'),
+        readline = require('readline');
+
+    var rd = readline.createInterface({
+        input: fs.createReadStream(fileUri[0].fsPath)
+    });
+    let CountLines = 0;    
+    rd.on('line', function (line) {
+        CountLines = CountLines + 1;
+        if ((CountLines % 10000) == 0)
+        {
+            console.log(CountLines);
+            console.log(line);
+        }
+    });
+    rd.on('close',function () {
+        console.log('Final');
+        console.log(CountLines);
+    }
+    );
+}

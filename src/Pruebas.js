@@ -181,7 +181,7 @@ async function ReadLargeFile() {
 		}
 	};
     let fileUri = await vscode.window.showOpenDialog(options);
-    const PromiseDlg = await vscode.window.showWarningMessage('Seguro, pepe, en serio?',{modal:false},'Yes','No');
+    const PromiseDlg = await vscode.window.showWarningMessage('Are you run a long time process with the file?',{modal:false},'Yes','No');
     if (PromiseDlg == 'No')
     {
         vscode.window.showInformationMessage('Process cancelled');        

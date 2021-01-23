@@ -180,8 +180,14 @@ async function ReadLargeFile() {
 			'xlf': ['xlf'],
 		}
 	};
-	let fileUri = await vscode.window.showOpenDialog(options);
-
+    let fileUri = await vscode.window.showOpenDialog(options);
+    const PromiseDlg = await vscode.window.showWarningMessage('Seguro, pepe, en serio?',{modal:false},'Yes','No');
+    if (PromiseDlg == 'No')
+    {
+        vscode.window.showInformationMessage('Process cancelled');        
+        return;
+    }
+    vscode.window.showInformationMessage('Processing file:' + fileUri[0].fsPath,{modal:false},'Got it');
     var fs = require('fs'),
         readline = require('readline');
 
@@ -200,6 +206,7 @@ async function ReadLargeFile() {
     rd.on('close',function () {
         console.log('Final');
         console.log(CountLines);
+        vscode.window.showInformationMessage('Ending file lines:' + CountLines.toString());
     }
     );
 }

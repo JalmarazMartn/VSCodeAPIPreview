@@ -1,3 +1,4 @@
+const { listenerCount } = require('node:events');
 const vscode = require('vscode');
 //let ALObjects = [];
 let ALObjects = [];
@@ -13,9 +14,11 @@ module.exports = {
         //GetExtensions();
         //GetALExtension();
         //GetALObjects();
+        //ShowQuickPick();        
+        CatchDocumentChanges();
         //ShowALObjectsOuputChannel();
         //GetDiagnostics();
-        ReadLargeFile();
+        //ReadLargeFile();
     },
     GetALObjects: async function(){
         return(await GetALObjects());
@@ -209,4 +212,38 @@ async function ReadLargeFile() {
         vscode.window.showInformationMessage('Ending file lines:' + CountLines.toString());
     }
     );
+}
+function ShowQuickPick()
+{
+    vscode.window.showQuickPick(['Tonto','Gusano'],
+    {placeHolder:'Elige entre ser tonto o gusano'}).then(value=>
+        {
+            vscode.window.showInformationMessage('Vas a ser ' + value + ' todo el dia');
+        });		
+}
+function CatchDocumentChanges()
+{
+    var listener = function(event) {                
+        console.log(event);
+        if (event.contentChanges[0].text.charCodeAt(0) == 13)
+        {
+            console.log('Intro');
+            console.log(event.contentChanges[0].range.end);
+            const WSEdit = new vscode.WorkspaceEdit;
+            const NewPosition = new vscode.Position(event.contentChanges[0].range.end.line + 1,0);
+            WSEdit.insert(event.document.uri,NewPosition,'v1: ');
+            vscode.workspace.applyEdit(WSEdit);
+        }
+      };
+      
+      // start listening
+      var subscription = vscode.workspace.onDidChangeTextDocument(listener);
+      
+      // do more stuff
+      
+      //subscription.dispose(); // stop listening
+}
+function StopCatchDocumentChanges()
+{
+    subscription.dispose;
 }

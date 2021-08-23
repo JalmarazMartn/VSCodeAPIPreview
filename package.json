@@ -20,7 +20,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscAPIPrev.MiscPruebas"
+		"onCommand:vscAPIPrev.MiscPruebas",
+		"onCommand:vscAPIPrev.MiscPruebas2"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -28,7 +29,11 @@
 			{
 				"command": "vscAPIPrev.MiscPruebas",
 				"title": "Deprecated JAM Pruebas diversas para uso interno"
-			}
+			},
+			{
+				"command": "vscAPIPrev.MiscPruebas2",
+				"title": "Deprecated JAM 2 Pruebas diversas para uso interno"
+			}			
 		]
 	},
 	"scripts": {

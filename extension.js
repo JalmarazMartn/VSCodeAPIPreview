@@ -25,6 +25,12 @@ let disposableMiscPruebas = vscode.commands.registerCommand('vscAPIPrev.MiscPrue
 	Pruebas.Pruebas(context);
 });
 context.subscriptions.push(disposableMiscPruebas);
+
+let disposableMiscPruebas2 = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas2', function () {
+	const Pruebas = require('./src/Pruebas.js');
+	Pruebas.Pruebas2();
+});
+context.subscriptions.push(disposableMiscPruebas2);
 }
 
 

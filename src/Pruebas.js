@@ -1,5 +1,6 @@
-const { listenerCount } = require('node:events');
 const vscode = require('vscode');
+var subscription = vscode.workspace.onDidChangeTextDocument(HandleDocumentChanges);
+subscription.dispose();
 //let ALObjects = [];
 let ALObjects = [];
 module.exports = {
@@ -11,18 +12,22 @@ module.exports = {
         //GetSymbolsInfo();
         //GetCodeActionProvider();
         //GetExtensionConf();
-        //GetExtensions();
+        GetExtensions();
         //GetALExtension();
         //GetALObjects();
         //ShowQuickPick();        
-        CatchDocumentChanges();
+        //CatchDocumentChanges();
         //ShowALObjectsOuputChannel();
         //GetDiagnostics();
         //ReadLargeFile();
     },
     GetALObjects: async function(){
         return(await GetALObjects());
+    },
+    Pruebas2: async function(){
+        StopCatchDocumentChanges();
     }
+
 }
 async function GetSymbolsInfo()
 {
@@ -96,6 +101,7 @@ try {
     if (!(ALExtension.isActive))
     {ALExtension.activate}
     const ALAPI = ALExtension.exports;
+    console.log(ALExtension);
     if (ALAPI)
     {
         console.log('Extension =========>' + ExtensionId);        
@@ -223,7 +229,14 @@ function ShowQuickPick()
 }
 function CatchDocumentChanges()
 {
-    var listener = function(event) {                
+      // start listening
+      subscription = vscode.workspace.onDidChangeTextDocument(HandleDocumentChanges);
+      // do more stuff
+      
+      //subscription.dispose(); // stop listening
+}
+function HandleDocumentChanges(event)
+{
         console.log(event);
         if (event.contentChanges[0].text.charCodeAt(0) == 13)
         {
@@ -234,16 +247,14 @@ function CatchDocumentChanges()
             WSEdit.insert(event.document.uri,NewPosition,'v1: ');
             vscode.workspace.applyEdit(WSEdit);
         }
-      };
-      
-      // start listening
-      var subscription = vscode.workspace.onDidChangeTextDocument(listener);
-      
-      // do more stuff
-      
+
       //subscription.dispose(); // stop listening
 }
 function StopCatchDocumentChanges()
 {
-    subscription.dispose;
+    subscription.dispose();
+}
+function ExecuteTask(TaskLabel)
+{
+
 }

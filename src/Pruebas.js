@@ -10,16 +10,19 @@ module.exports = {
 
         //GetDocumentSymbols();
         //GetSymbolsInfo();
+        ExecuteDefinitionProvider();
         //GetCodeActionProvider();
         //GetExtensionConf();
-        GetExtensions();
+        //GetExtensions();
         //GetALExtension();
         //GetALObjects();
         //ShowQuickPick();        
         //CatchDocumentChanges();
         //ShowALObjectsOuputChannel();
         //GetDiagnostics();
-        //ReadLargeFile();
+        //ReadLargeFile();        
+        //ExecuteCommWithUriAndPos('git.commit');
+        //ExcuteTask('echoDir');
     },
     GetALObjects: async function(){
         return(await GetALObjects());
@@ -31,11 +34,30 @@ module.exports = {
 }
 async function GetSymbolsInfo()
 {
+    await ExecuteCommWithUriAndPos('vscode.executeDocumentHighlights');
     await ExecuteCommWithUriAndPos('vscode.executeDefinitionProvider');
     await ExecuteCommWithUriAndPos('vscode.executeDeclarationProvider');
     await ExecuteCommWithUriAndPos('vscode.executeTypeDefinitionProvider');
     await ExecuteCommWithUriAndPos('vscode.executeImplementationProvider');
     await ExecuteCommWithUriAndPos('vscode.executeReferenceProvider');
+}
+async function ExecuteDefinitionProvider()
+{
+    console.log('vscode.executeDefinitionProvider');    
+    let document = vscode.window.activeTextEditor.document;
+    let locations = await vscode.commands.executeCommand('vscode.executeDefinitionProvider',
+    document.uri,vscode.window.activeTextEditor.selection.start);
+   // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
+    if (locations)
+    {    
+    //console.log(locations[0].uri);
+    let doc = await vscode.workspace.openTextDocument(locations[0].uri);        
+
+    console.log(doc.lineAt(locations[0].range.start.line).text);    
+    console.log(doc.getText(locations[0].range));    
+    console.log(locations);
+    }
+
 }
 async function GetDocumentSymbols()
 {    
@@ -254,7 +276,7 @@ function StopCatchDocumentChanges()
 {
     subscription.dispose();
 }
-function ExecuteTask(TaskLabel)
+function ExcuteTask(TaskLabel='')
 {
-
+    vscode.commands.executeCommand('workbench.action.tasks.runTask',TaskLabel);
 }

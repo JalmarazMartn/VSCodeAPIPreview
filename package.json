@@ -21,7 +21,8 @@
 	],
 	"activationEvents": [
 		"onCommand:vscAPIPrev.MiscPruebas",
-		"onCommand:vscAPIPrev.MiscPruebas2"
+		"onCommand:vscAPIPrev.MiscPruebas2",
+		"onLanguage:al"
 	],
 	"main": "./extension.js",
 	"contributes": {

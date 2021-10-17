@@ -31,9 +31,20 @@ let disposableMiscPruebas2 = vscode.commands.registerCommand('vscAPIPrev.MiscPru
 	Pruebas.Pruebas2();
 });
 context.subscriptions.push(disposableMiscPruebas2);
+
+const fixProvider = {	
+    provideCodeActions: function(){
+		const CodeActions = require('./src/CodeAction.js');		
+	return CodeActions.GetFieldsCodeAction();
+	}
+};
+context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',fixProvider));
+
+const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
+context.subscriptions.push(transferFieldsDiagnostics);
+const CodeActions = require('./src/CodeAction.js');		
+CodeActions.subscribeToDocumentChanges(context,transferFieldsDiagnostics);
 }
-
-
 
 // @ts-ignore
 exports.activate = activate;

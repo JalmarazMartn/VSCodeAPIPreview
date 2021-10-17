@@ -10,10 +10,10 @@ module.exports = {
 
         //GetDocumentSymbols();
         //GetSymbolsInfo();
-        ExecuteDefinitionProvider();
+        //ExecuteDefinitionProvider();
         //GetCodeActionProvider();
         //GetExtensionConf();
-        //GetExtensions();
+        GetExtensions();
         //GetALExtension();
         //GetALObjects();
         //ShowQuickPick();        
@@ -111,9 +111,12 @@ async function GetExtensions()
 {
     let AllExtensions = vscode.extensions.all;
     console.log(AllExtensions.length);
+    const ExtChannel = await vscode.window.createOutputChannel('Extensions');
+    ExtChannel.show();
     for (var i = 0; i < AllExtensions.length; i++) {
         let Extension = AllExtensions[i];
-        await GetALExtension(Extension.id);
+        ExtChannel.append(JSON.stringify(Extension));
+        await GetALExtension(Extension.id);        
      }
 }
 async function GetALExtension(ExtensionId = '')

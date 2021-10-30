@@ -20,8 +20,8 @@ function GetFieldsCodeAction() {
                 //
                 const FieldsCodeAction = new vscode.CodeAction('Break Down Fields', vscode.CodeActionKind.QuickFix);
                 //FieldsCodeAction.command = vscode.commands.executeCommand('');    
-                FieldsCodeAction.diagnostics = AppDiagnostics[i][1][j];
-                FieldsCodeAction.diagnostics.push(AppDiagnostics[i][1][j]);
+                FieldsCodeAction.diagnostics = [AppDiagnostics[i][1][j]];
+                //FieldsCodeAction.diagnostics.push(AppDiagnostics[i][1][j]);
                 FieldsCodeActions.push(FieldsCodeAction);                                                
             }
         }

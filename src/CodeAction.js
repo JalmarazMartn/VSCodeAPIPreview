@@ -8,15 +8,38 @@ module.exports = {
     subscribeToDocumentChanges: function (context, TransferFieldsDiagnostic) { subscribeToDocumentChanges(context, TransferFieldsDiagnostic) },
     refreshDiagnostics: function (doc, TransferFieldsDiagnostic) { refreshDiagnostics(doc, TransferFieldsDiagnostic) }
 }
-function GetFieldsCodeAction() {
-    const FieldsCodeAction = new vscode.CodeAction('Break Down Fields', vscode.CodeActionKind.Refactor);
-    //FieldsCodeAction.command = vscode.commands.executeCommand('');    
-    FieldsCodeAction.diagnostics = GetDiagnostics();
-    return [FieldsCodeAction];
+function GetFieldsCodeAction() {    
+    let FieldsCodeActions = [];
+    const AppUri = vscode.workspace.workspaceFile;
+    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
+    let TransferFieldsDiagnostics = [];
+    for (let i = 0; i < AppDiagnostics.length; i++) {
+        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
+            if (AppDiagnostics[i][1][j].message == transferFieldsDiagnosticText) {
+                TransferFieldsDiagnostics.push(AppDiagnostics[i][1][j]);                
+                //
+                const FieldsCodeAction = new vscode.CodeAction('Break Down Fields', vscode.CodeActionKind.QuickFix);
+                //FieldsCodeAction.command = vscode.commands.executeCommand('');    
+                FieldsCodeAction.diagnostics = AppDiagnostics[i][1][j];
+                FieldsCodeAction.diagnostics.push(AppDiagnostics[i][1][j]);
+                FieldsCodeActions.push(FieldsCodeAction);                                                
+            }
+        }
+    }
+    return FieldsCodeActions;
 }
 function GetDiagnostics() {
     const AppUri = vscode.workspace.workspaceFile;
-    return vscode.languages.getDiagnostics(AppUri);
+    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
+    let TransferFieldsDiagnostics = [];
+    for (let i = 0; i < AppDiagnostics.length; i++) {
+        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
+            if (AppDiagnostics[i][1][j].message == transferFieldsDiagnosticText) {
+                TransferFieldsDiagnostics.push(AppDiagnostics[i][1][j]);                
+            }
+        }
+    }
+    return TransferFieldsDiagnostics;
 }
 function createDiagnostic(doc, lineOfText, lineIndex) {
     // find where in the line of thet the 'emoji' is mentioned
@@ -30,25 +53,23 @@ function createDiagnostic(doc, lineOfText, lineIndex) {
     return diagnostic;
 }
 function subscribeToDocumentChanges(context, TransferFieldsDiagnostic) {
-	if (vscode.window.activeTextEditor) {
-		refreshDiagnostics(vscode.window.activeTextEditor.document, TransferFieldsDiagnostic);
-	}
-	context.subscriptions.push(
-		vscode.window.onDidChangeActiveTextEditor(editor => {
-			if (editor) {
-				refreshDiagnostics(editor.document, TransferFieldsDiagnostic);
-			}
-		})
-	);
+    if (vscode.window.activeTextEditor) {
+        refreshDiagnostics(vscode.window.activeTextEditor.document, TransferFieldsDiagnostic);
+    }
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor) {
+                refreshDiagnostics(editor.document, TransferFieldsDiagnostic);
+            }
+        })
+    );
 
-	context.subscriptions.push(
-		vscode.workspace.onDidChangeTextDocument(e => refreshDiagnostics(e.document, TransferFieldsDiagnostic))
-	);
-	context.subscriptions.push(
-		vscode.workspace.onDidCloseTextDocument(doc => TransferFieldsDiagnostic.delete(doc.uri))
-	);
-
-
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument(e => refreshDiagnostics(e.document, TransferFieldsDiagnostic))
+    );
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument(doc => TransferFieldsDiagnostic.delete(doc.uri))
+    );
 }
 function refreshDiagnostics(doc, TransferFieldsDiagnostic) {
     let diagnostics = [];
@@ -59,5 +80,5 @@ function refreshDiagnostics(doc, TransferFieldsDiagnostic) {
             diagnostics.push(createDiagnostic(doc, lineOfText, lineIndex));
         }
     }
-    TransferFieldsDiagnostic.set(doc.uri,diagnostics);
+    TransferFieldsDiagnostic.set(doc.uri, diagnostics);
 }

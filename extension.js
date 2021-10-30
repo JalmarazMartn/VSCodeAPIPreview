@@ -20,37 +20,42 @@ function activate(context) {
 
 
 
-let disposableMiscPruebas = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas', function () {
-	const Pruebas = require('./src/Pruebas.js');
-	Pruebas.Pruebas(context);
-});
-context.subscriptions.push(disposableMiscPruebas);
+	let disposableMiscPruebas = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas', function () {
+		const Pruebas = require('./src/Pruebas.js');
+		Pruebas.Pruebas(context);
+	});
+	context.subscriptions.push(disposableMiscPruebas);
 
-let disposableMiscPruebas2 = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas2', function () {
-	const Pruebas = require('./src/Pruebas.js');
-	Pruebas.Pruebas2();
-});
-context.subscriptions.push(disposableMiscPruebas2);
+	let disposableMiscPruebas2 = vscode.commands.registerCommand('vscAPIPrev.MiscPruebas2', function () {
+		const Pruebas = require('./src/Pruebas.js');
+		Pruebas.Pruebas2();
+	});
+	context.subscriptions.push(disposableMiscPruebas2);
 
-const fixProvider = {	
-    provideCodeActions: function(){
-		const CodeActions = require('./src/CodeAction.js');		
-	return CodeActions.GetFieldsCodeAction();
-	}
-};
-context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',fixProvider));
+	const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
+	context.subscriptions.push(transferFieldsDiagnostics);
+	const CodeActions = require('./src/CodeAction.js');
+	CodeActions.subscribeToDocumentChanges(context, transferFieldsDiagnostics);
 
-const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
-context.subscriptions.push(transferFieldsDiagnostics);
-const CodeActions = require('./src/CodeAction.js');		
-CodeActions.subscribeToDocumentChanges(context,transferFieldsDiagnostics);
+	let fixProvider = {
+		provideCodeActions: 
+		function () {
+			const CodeActions = require('./src/CodeAction.js');
+			return CodeActions.GetFieldsCodeAction();		
+		}
+	};
+	console.log('retorno 2');	
+	console.log(fixProvider);	
+	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',fixProvider));
+	//context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',CodeActions.GetFieldsCodeAction()));
+
 }
 
 // @ts-ignore
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 
 module.exports = {

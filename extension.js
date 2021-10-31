@@ -38,8 +38,6 @@ function activate(context) {
 	CodeActions.subscribeToDocumentChanges(context, transferFieldsDiagnostics);
 
 	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',new CodeActions.transferFieldsClass));
-	//context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',CodeActions.GetFieldsCodeAction()));
-
 }
 
 // @ts-ignore

@@ -1,4 +1,5 @@
 const transFieldsCaption = 'TransferFields';
+const transFieldsCode = 'JAM00001';
 const vscode = require('vscode');
 const transferFieldsDiagnosticText = 'You can avoid transferfields statement applying break down in fields fixing';
 class transferFieldsClass
@@ -7,7 +8,7 @@ class transferFieldsClass
 	{
 		this.provideCodeActions = function (document,range,context,token) {
 			return context.diagnostics
-			.filter(diagnostic => diagnostic.code === 'JAM00001')
+			.filter(diagnostic => diagnostic.code === transFieldsCode)
 			.map(diagnostic => this.createCommandCodeAction(diagnostic));
 		}
 	}
@@ -20,73 +21,11 @@ class transferFieldsClass
 	}
 };
 module.exports = {
-    GetFieldsCodeActions: function () {
-        return GetFieldsCodeActions();
-    },
-    GetFieldsCodeAction2: function (context) {
-        return GetFieldsCodeAction2(context);
-    },
     transferFieldsClass,
     subscribeToDocumentChanges: function (context, TransferFieldsDiagnostic) { subscribeToDocumentChanges(context, TransferFieldsDiagnostic) },
     refreshDiagnostics: function (doc, TransferFieldsDiagnostic) { refreshDiagnostics(doc, TransferFieldsDiagnostic) }
 }
-function GetFieldsCodeActions() { 
-    let FieldsCodeActions = [];
-    console.log(FieldsCodeActions.length);
-    const AppUri = vscode.workspace.workspaceFile;
-    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
-    let TransferFieldsDiagnostics = [];
-    for (let i = 0; i < AppDiagnostics.length; i++) {
-        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
-            if (AppDiagnostics[i][1][j].message == transferFieldsDiagnosticText) {
-                TransferFieldsDiagnostics.push(AppDiagnostics[i][1][j]);                
-                const FieldsCodeAction = new vscode.CodeAction('Break Down Fields', vscode.CodeActionKind.QuickFix);
-                //FieldsCodeAction.command = vscode.commands.executeCommand('');                    
-                FieldsCodeAction.diagnostics = [AppDiagnostics[i][1][j]];                
-                //FieldsCodeAction.diagnostics.push(AppDiagnostics[i][1][j]);
-                FieldsCodeActions.push(FieldsCodeAction);                                        
-                console.log(FieldsCodeActions);
-                return FieldsCodeActions;
-            }
-        }
-    }
-    //return FieldsCodeActions;
-}
-function GetFieldsCodeAction2(context) {    
-    let FieldsCodeActions = [];
-    console.log(context);
-    const AppUri = vscode.workspace.workspaceFile;
-    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
-    let TransferFieldsDiagnostics = [];
-    for (let i = 0; i < AppDiagnostics.length; i++) {
-        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
-            if (AppDiagnostics[i][1][j].message == transferFieldsDiagnosticText) {
-                TransferFieldsDiagnostics.push(AppDiagnostics[i][1][j]);                
-                //
-                const FieldsCodeAction = new vscode.CodeAction('Break Down Fields', vscode.CodeActionKind.QuickFix);
-                //FieldsCodeAction.command = vscode.commands.executeCommand('');                    
-                FieldsCodeAction.diagnostics = [AppDiagnostics[i][1][j]];
-                //FieldsCodeAction.diagnostics.push(AppDiagnostics[i][1][j]);
-                FieldsCodeActions.push(FieldsCodeAction);                                                
-            }
-        }
-    }
-    return FieldsCodeActions;
-}
 
-function GetDiagnostics() {
-    const AppUri = vscode.workspace.workspaceFile;
-    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
-    let TransferFieldsDiagnostics = [];
-    for (let i = 0; i < AppDiagnostics.length; i++) {
-        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
-            if (AppDiagnostics[i][1][j].message == transferFieldsDiagnosticText) {
-                TransferFieldsDiagnostics.push(AppDiagnostics[i][1][j]);                
-            }
-        }
-    }
-    return TransferFieldsDiagnostics;
-}
 function createDiagnostic(doc, lineOfText, lineIndex) {
     // find where in the line of thet the 'emoji' is mentioned
     const index = lineOfText.text.indexOf(transFieldsCaption);
@@ -95,7 +34,7 @@ function createDiagnostic(doc, lineOfText, lineIndex) {
     const range = new vscode.Range(lineIndex, index, lineIndex, index + transFieldsCaption.length);
     const diagnostic = new vscode.Diagnostic(range, transferFieldsDiagnosticText,
         vscode.DiagnosticSeverity.Information);
-    diagnostic.code = 'JAM00001';
+    diagnostic.code = transFieldsCode;
     return diagnostic;
 }
 function subscribeToDocumentChanges(context, TransferFieldsDiagnostic) {

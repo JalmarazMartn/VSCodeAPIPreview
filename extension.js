@@ -37,16 +37,7 @@ function activate(context) {
 	const CodeActions = require('./src/CodeAction.js');
 	CodeActions.subscribeToDocumentChanges(context, transferFieldsDiagnostics);
 
-	let fixProvider = {
-		provideCodeActions: 
-		function () {
-			const CodeActions = require('./src/CodeAction.js');
-			return CodeActions.GetFieldsCodeAction();		
-		}
-	};
-	console.log('retorno 2');	
-	console.log(fixProvider);	
-	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',fixProvider));
+	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',new CodeActions.transferFieldsClass));
 	//context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',CodeActions.GetFieldsCodeAction()));
 
 }
@@ -56,7 +47,6 @@ exports.activate = activate;
 
 // this method is called when your extension is deactivated
 function deactivate() { }
-
 
 module.exports = {
 	// @ts-ignore

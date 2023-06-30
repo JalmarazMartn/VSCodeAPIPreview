@@ -32,12 +32,12 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposableMiscPruebas2);
 
-	const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
+	/*const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
 	context.subscriptions.push(transferFieldsDiagnostics);
 	const CodeActions = require('./src/CodeAction.js');
 	CodeActions.subscribeToDocumentChanges(context, transferFieldsDiagnostics);
 
-	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',new CodeActions.transferFieldsClass));
+	context.subscriptions.push(vscode.languages.registerCodeActionsProvider('al',new CodeActions.transferFieldsClass));*/
 }
 
 // @ts-ignore

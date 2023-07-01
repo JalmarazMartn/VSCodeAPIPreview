@@ -11,9 +11,10 @@ module.exports = {
         //GetDocumentSymbols();
         //GetSymbolsInfo();
         //ExecuteDefinitionProvider();
-        //GetCodeActionProvider();
+        GetCodeActionProvider();
         //GetExtensionConf();
-        GetExtensions();
+        //GetExtensions();
+        //SelectExtension();
         //GetALExtension();
         //GetALObjects();
         //ShowQuickPick();        
@@ -86,6 +87,23 @@ async function GetCodeActionProvider() {
         ActualRange);
     if (CodeActions) {
         console.log(CodeActions);
+        console.log(CodeActions[0].command.command);
+        console.log(CodeActions[0].command.arguments);
+        //console.log(CodeActions[0].command.arguments[0].identifier);
+        await vscode.commands.executeCommand(CodeActions[0].command.command,
+            vscode.window.activeTextEditor.document,
+            'newProcedure(ResponseLuisText, Index);',
+            CodeActions[0].command.arguments[2],
+            ActualRange,
+            false
+            );
+            //,CodeActions[0].command.arguments);
+            //CodeActions[0].command.arguments);
+            //CodeActions[0].command.command.title,
+            //vscode.window.activeTextEditor.document.uri,
+            //ActualRange);            
+            //CodeActions[0].command.arguments[0].identifier,
+            //true);
     }
 
 }
@@ -124,6 +142,7 @@ async function GetALExtension(ExtensionId = '') {
             console.log('Extension =========>' + ExtensionId);
             console.log(ALAPI);
             if (ExtensionId == 'martonsagi.al-object-designer') {
+
                 const APIObject1 = await ALAPI.ALObjectCollector;
                 console.log('ALObjectCollector:');
                 console.log(APIObject1);
@@ -303,4 +322,35 @@ function getProblemMessageCode(problemCode) {
     }
     return problemCode.value;
 
+}
+async function SelectExtension() {
+    let AllExtensions = vscode.extensions.all;
+    let extensionIds = [''];
+    for (let index = 0; index < AllExtensions.length; index++) {
+        extensionIds.push(AllExtensions[index].id);
+    }
+    let value = await vscode.window.showQuickPick(extensionIds,
+        { placeHolder: 'Pick an extension' });
+    if (!value)
+    {
+        return;
+    }
+    if (value == '')
+    {
+        return;
+    }
+    const extension = vscode.extensions.getExtension(value);
+    if (!(extension.isActive)) { extension.activate }
+    const ALAPI = extension.exports;
+    console.log(extension);
+    if (ALAPI) {
+        console.log('Extension =========>' + extension.id);
+        console.log(ALAPI);
+        const APIObject1 = await ALAPI.ALObjectCollector;
+        console.log('ALObjectCollector:');
+        console.log(APIObject1);
+        console.log('ALObjectCollector: Methods');
+        console.log(getMethods(APIObject1));
+
+    }
 }

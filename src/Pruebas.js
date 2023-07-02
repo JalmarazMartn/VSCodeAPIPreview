@@ -89,21 +89,22 @@ async function GetCodeActionProvider() {
         console.log(CodeActions);
         console.log(CodeActions[0].command.command);
         console.log(CodeActions[0].command.arguments);
-        //console.log(CodeActions[0].command.arguments[0].identifier);
-        await vscode.commands.executeCommand(CodeActions[0].command.command,
-            vscode.window.activeTextEditor.document,
-            'newProcedure(ResponseLuisText, Index);',
+        let executionsWithArgs = 'vscode.commands.executeCommand(CodeActions[0].command.command';
+        if (CodeActions[0].command.arguments)
+        {
+            for (let index = 0; index < CodeActions[0].command.arguments.length; index++) {
+                executionsWithArgs = executionsWithArgs + ',CodeActions[0].command.arguments['+ index.toString() + ']';
+            }
+            executionsWithArgs = executionsWithArgs + ');';
+        }
+        await eval(executionsWithArgs);
+        /*await vscode.commands.executeCommand(CodeActions[0].command.command,
+            CodeActions[0].command.arguments[0],
+            CodeActions[0].command.arguments[1],
             CodeActions[0].command.arguments[2],
-            ActualRange,
-            false
-            );
-            //,CodeActions[0].command.arguments);
-            //CodeActions[0].command.arguments);
-            //CodeActions[0].command.command.title,
-            //vscode.window.activeTextEditor.document.uri,
-            //ActualRange);            
-            //CodeActions[0].command.arguments[0].identifier,
-            //true);
+            CodeActions[0].command.arguments[3],
+            CodeActions[0].command.arguments[4]
+            );*/
     }
 
 }

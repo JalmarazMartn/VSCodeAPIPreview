@@ -86,16 +86,16 @@ async function GetCodeActionProvider() {
     const actualRange = new vscode.Range(vscode.window.activeTextEditor.selection.start,
         vscode.window.activeTextEditor.selection.end);
     const startRange = new vscode.Range(vscode.window.activeTextEditor.selection.start,
-            vscode.window.activeTextEditor.selection.start);
-    
+        vscode.window.activeTextEditor.selection.start);
+
     let codeActions = await vscode.commands.executeCommand("vscode.executeCodeActionProvider", vscode.window.activeTextEditor.document.uri,
         actualRange);
     let codeActionsStart = await vscode.commands.executeCommand("vscode.executeCodeActionProvider", vscode.window.activeTextEditor.document.uri,
-    startRange);
-    if (codeActionsStart)
-    {
+        startRange);
+    if (codeActionsStart) {
         for (let index = 0; index < codeActionsStart.length; index++) {
-            codeActions.push(codeActionsStart[index]);            
+            pushCodeActionsIfNotExists(codeActionsStart[index],codeActions);
+            //codeActions.push(codeActionsStart[index]);
         }
     }
     if (!codeActions) {
@@ -107,17 +107,32 @@ async function GetCodeActionProvider() {
         return
     }
     let codeActionsTitles = [];
-    for (let index = 0; index < codeActions.length; index++) {
-         codeActionsTitles.push(codeActions[index].title);        
+    for (let index = 0; index < codeActions.length; index++) {        
+        codeActionsTitles.push(codeActions[index].title);
     }
     console.log(codeActions);
-    const codeActionTitle = await vscode.window.showQuickPick(codeActionsTitles,
+
+        const codeActionTitle = await vscode.window.showQuickPick(codeActionsTitles,
             { placeHolder: 'Choose CodeActions to execute.' });
-    if (codeActionTitle == '')
+        if (codeActionTitle == '') {
+            return;
+        }
+        codeActions = codeActions.filter(x => x.title == codeActionTitle);
+        execCodeAction(codeActions);
+}
+function pushCodeActionsIfNotExists(codeActionStart,codeActions)
+{
+    const existingCodeActions = codeActions.filter(x => x.title == codeActionStart.title);
+    if (existingCodeActions)
     {
-        return;
+        if (existingCodeActions.length > 0)
+        {
+            return;
+        }
     }
-    codeActions = codeActions.filter(x => x.title == codeActionTitle);
+    codeActions.push(codeActionStart);
+}
+async function execCodeAction(codeActions) {
     console.log(codeActions);
     console.log(codeActions[0].command.command);
     console.log(codeActions[0].command.arguments);
@@ -348,15 +363,13 @@ async function GetCodeActionsFromDocByLine() {
     const document = vscode.window.activeTextEditor.document;
     //console.log(definition);
     for (let i = 0; i < document.lineCount; i++) {
-        const range = new vscode.Range(new vscode.Position(i, 0), new vscode.Position(i,1000));
+        const range = new vscode.Range(new vscode.Position(i, 0), new vscode.Position(i, 1000));
         const definition = await vscode.commands.executeCommand('vscode.executeCodeActionProvider', document.uri, range);
-        if (definition)
-        {
-            if (definition.length !== 0)
-            {
+        if (definition) {
+            if (definition.length !== 0) {
                 console.log(i);
                 console.log(definition);
-            }            
+            }
         }
     }
 }

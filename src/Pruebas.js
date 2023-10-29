@@ -8,10 +8,13 @@ module.exports = {
         //const translation = require('./translations.js');		
         //translation.EditHtmlTranslation(context);
 
+        //GetWorkSpaceSymbols();
         //GetDocumentSymbols();
         //GetSymbolsInfo();
-        //ExecuteDefinitionProvider();
-        GetCodeActionProvider();
+        //ExecuteCommWithUriAndRange('vscode.provideDocumentRangeSemanticTokens');
+        //ExecuteCommWithUri('vscode.provideDocumentSemanticTokens');
+        ExecuteDefinitionProvider();
+        //ExecuteCommWithUriAndPos('vscode.executeHoverProvider');
         //GetExtensionConf();
         //GetExtensions();
         //SelectExtension();
@@ -28,6 +31,7 @@ module.exports = {
         //executeDefinitionProvider();
         //GetCodeActionsFromDoc();
         //GetCodeActionsFromDocByLine();
+        //GetCodeActionProvider(); Ultima
     },
     GetALObjects: async function () {
         return (await GetALObjects());
@@ -49,7 +53,7 @@ async function ExecuteDefinitionProvider() {
     console.log('vscode.executeDefinitionProvider');
     let document = vscode.window.activeTextEditor.document;
     let locations = await vscode.commands.executeCommand('vscode.executeDefinitionProvider',
-        document.uri, vscode.window.activeTextEditor.selection.start);
+        document.uri,vscode.window.activeTextEditor.selection.start);
     // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
     if (locations) {
         //console.log(locations[0].uri);
@@ -61,7 +65,7 @@ async function ExecuteDefinitionProvider() {
     }
 
 }
-async function GetDocumentSymbols() {
+async function GetWorkSpaceSymbols() {
     //vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider","Whse. Asistant Mngt").then(
     //    function (symbols) {
     //        console.log('symbols');
@@ -71,6 +75,18 @@ async function GetDocumentSymbols() {
     console.log(symbols);
 
 }
+async function GetDocumentSymbols() {
+    //vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider","Whse. Asistant Mngt").then(
+    //    function (symbols) {
+    //        console.log('symbols');
+    //    }
+    //);    
+    let document = vscode.window.activeTextEditor.document;
+    let symbols = await vscode.commands.executeCommand("vscode.executeDocumentSymbolProvider",document.uri);
+    console.log(symbols);
+
+}
+
 async function ExecuteCommWithUriAndPos(CommandToExec = '') {
     console.log('Command:' + CommandToExec);
     let document = vscode.window.activeTextEditor.document;
@@ -81,6 +97,28 @@ async function ExecuteCommWithUriAndPos(CommandToExec = '') {
         console.log(locations);
     }
 }
+async function ExecuteCommWithUriAndRange(CommandToExec = '') {
+    console.log('Command:' + CommandToExec);
+    let document = vscode.window.activeTextEditor.document;
+    let locations = await vscode.commands.executeCommand(CommandToExec,
+        document.uri, new vscode.Range(vscode.window.activeTextEditor.selection.start,
+            vscode.window.activeTextEditor.selection.end));
+    // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
+    if (locations) {
+        console.log(locations);
+    }
+}
+async function ExecuteCommWithUri(CommandToExec = '') {
+    console.log('Command:' + CommandToExec);
+    let document = vscode.window.activeTextEditor.document;
+    let locations = await vscode.commands.executeCommand(CommandToExec,
+        document.uri);
+    // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
+    if (locations) {
+        console.log(locations);
+    }
+}
+
 async function GetCodeActionProvider() {
     const codeActions = require('./codeActions.js');
     codeActions.getCodeActionProvider();

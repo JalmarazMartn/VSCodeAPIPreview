@@ -10,10 +10,12 @@ module.exports = {
 
         //GetWorkSpaceSymbols();
         //GetDocumentSymbols();
+        //GetDocumentVariables();
+        GetDocumentProcedures();
         //GetSymbolsInfo();
         //ExecuteCommWithUriAndRange('vscode.provideDocumentRangeSemanticTokens');
         //ExecuteCommWithUri('vscode.provideDocumentSemanticTokens');
-        ExecuteDefinitionProvider();
+        //ExecuteDefinitionProvider();
         //ExecuteCommWithUriAndPos('vscode.executeHoverProvider');
         //GetExtensionConf();
         //GetExtensions();
@@ -70,21 +72,14 @@ async function GetWorkSpaceSymbols() {
     //    function (symbols) {
     //        console.log('symbols');
     //    }
-    //);    
-    let symbols = await vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider", " ");
-    console.log(symbols);
+    //);
+    const GetSymbols = require('./GetSymbols.js');
+    GetSymbols.GetWorkSpaceSymbols();
 
 }
 async function GetDocumentSymbols() {
-    //vscode.commands.executeCommand("vscode.executeWorkspaceSymbolProvider","Whse. Asistant Mngt").then(
-    //    function (symbols) {
-    //        console.log('symbols');
-    //    }
-    //);    
-    let document = vscode.window.activeTextEditor.document;
-    let symbols = await vscode.commands.executeCommand("vscode.executeDocumentSymbolProvider",document.uri);
-    console.log(symbols);
-
+    const GetSymbols = require('./GetSymbols.js');
+    GetSymbols.PrintDocumentSymbols();
 }
 
 async function ExecuteCommWithUriAndPos(CommandToExec = '') {
@@ -157,12 +152,12 @@ async function GetALExtension(ExtensionId = '') {
         if (ALAPI) {
             console.log('Extension =========>' + ExtensionId);
             console.log(ALAPI);
-            if (ExtensionId == 'martonsagi.al-object-designer') {
+            if (ExtensionId == 'andrzejzwierzchowski.al-code-outline') {
 
-                const APIObject1 = await ALAPI.ALObjectCollector;
-                console.log('ALObjectCollector:');
+                const APIObject1 = await ALAPI.activeDocumentSymbols;
+                console.log('activeDocumentSymbols:');
                 console.log(APIObject1);
-                console.log('ALObjectCollector: Methods');
+                console.log('activeDocumentSymbols: Methods');
                 console.log(getMethods(APIObject1));
             }
         }
@@ -235,6 +230,7 @@ async function ReadLargeFile() {
             'xlf': ['xlf'],
         }
     };
+    
     let fileUri = await vscode.window.showOpenDialog(options);
     const PromiseDlg = await vscode.window.showWarningMessage('Are you run a long time process with the file?', { modal: false }, 'Yes', 'No');
     if (PromiseDlg == 'No') {
@@ -353,6 +349,15 @@ async function SelectExtension() {
         console.log(APIObject1);
         console.log('ALObjectCollector: Methods');
         console.log(getMethods(APIObject1));
-
-    }
+    }    
+}
+async function GetDocumentVariables()
+{
+    const GetSymbols = require('./GetSymbols.js');
+    GetSymbols.GetDocumentVariables();
+}
+async function GetDocumentProcedures()
+{
+    const GetSymbols = require('./GetSymbols.js');
+    GetSymbols.GetDocumentProcedures();
 }

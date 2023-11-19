@@ -11,7 +11,8 @@ module.exports = {
         //GetWorkSpaceSymbols();
         //GetDocumentSymbols();
         //GetDocumentVariables();
-        GetDocumentProcedures();
+        //GetDocumentProcedures();
+        getLocalVariables();
         //GetSymbolsInfo();
         //ExecuteCommWithUriAndRange('vscode.provideDocumentRangeSemanticTokens');
         //ExecuteCommWithUri('vscode.provideDocumentSemanticTokens');
@@ -360,4 +361,9 @@ async function GetDocumentProcedures()
 {
     const GetSymbols = require('./GetSymbols.js');
     GetSymbols.GetDocumentProcedures();
+}
+async function getLocalVariables()
+{
+    const GetSymbols = require('./GetSymbols.js');
+    GetSymbols.getLocalVariables();
 }

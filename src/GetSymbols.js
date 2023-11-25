@@ -14,7 +14,8 @@ module.exports =
         GetDocumentProcedures();
     },
     getLocalVariables: async function () {
-        getLocalVariables();
+        await getLocalVariables();
+        await testVarCount();
     }
 
 }
@@ -82,6 +83,16 @@ async function GetDocumentProcedures() {
         }
     }
     return allProcedures;
+}
+async function testVarCount()
+{
+    const localVars = await getLocalVariables();
+    let allVariables = await GetDocumentVariables();
+    pushArrayIntoArray(localVars,allVariables);
+    for (let index = 0; index < localVars.length; index++) {
+        const element = localVars[index];
+        console.log(element.subtype + ' count ' + await getSubtypeCount(element.subtype,allVariables));
+    }
 }
 async function getLocalVariables() {
     let localVariables = [];

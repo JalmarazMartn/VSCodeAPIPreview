@@ -8,7 +8,7 @@ module.exports =
         PrintDocumentSymbols();
     },
     GetDocumentVariables: async function () {
-        GetDocumentVariables();
+        await GetDocumentVariables();
     },
     GetDocumentProcedures: async function () {
         GetDocumentProcedures();
@@ -45,19 +45,25 @@ async function GetDocumentSymbols() {
 async function GetDocumentVariables() {
     let allVariables = [];
     const documentSymbols = await GetDocumentSymbols();
-    console.log(documentSymbols);
+
     const docFirstChildren = documentSymbols[0].children[0];
-    if (docFirstChildren.name) {
-        if (docFirstChildren.name == 'var') {
-            for (let index = 0; index < docFirstChildren.children.length; index++) {
-                const element = docFirstChildren.children[index];
-                allVariables.push({
-                    "name": element.name,
-                    "scope": 'var'
-                });
-            }
-        }
+    if (!docFirstChildren.name) {
+        return allVariables;
     }
+    if (docFirstChildren.name != 'var') {
+        return allVariables;
+    }
+    //
+    const fromLine = docFirstChildren.range.start.line;
+    const ToLine = docFirstChildren.range.end.line;
+    const document 
+    = vscode.window.activeTextEditor.document;
+    for (let index = fromLine; index <= ToLine; index++) {
+        const element = document.lineAt(index).text;
+        const lineVariables = getVariablesFromLineText(element, 'var');
+        pushArrayIntoArray(lineVariables, allVariables);
+    }
+
     console.log(allVariables);
     return allVariables;
 }
@@ -88,18 +94,9 @@ async function getLocalVariables() {
 
     const document = vscode.window.activeTextEditor.document;
     for (let index = currentProcedure[0].lineFrom; index <= currentProcedure[0].lineTo; index++) {
-        const element = document.lineAt(index).text;
-        const regExpVarDeclaration = GetRegExpVarDeclaration(true);
-        var varDecMatches = element.match(regExpVarDeclaration);
-        if (varDecMatches) {
-        //subscriptionOnDidChange.dispose();//new
-        for (var j = 0; j < Object.keys(varDecMatches).length; j++) {
-            localVariables.push({
-                "name": varDecMatches[j],
-                "scope": currentProcedure[0].name
-            });            
-        }
-    }
+        const docLineText = document.lineAt(index).text;
+        const lineVariables = getVariablesFromLineText(docLineText, currentProcedure[0].name);
+        pushArrayIntoArray(lineVariables, localVariables);
     }
     console.log(localVariables);
     return localVariables;
@@ -113,7 +110,7 @@ function GetRegExpVarDeclaration(isGlobal = false) {
     const G2Spaces = new RegExp(/(\s*)/.source);
     const G3VarName = new RegExp(/([A-Za-z\s0-9"]*):\s*/.source);
     const G4VarType = new RegExp(/(Record|Page|TestPage|Report|Codeunit|Query|XmlPort|Enum|TestRequestPage)/.source);
-    const G5VarSubType = new RegExp(/([A-Za-z\s0-9"-\/]*)/.source);
+    const G5VarSubType = new RegExp(/\s*([A-Za-z\s0-9"-\/]*)/.source);
     const G6EndStat = new RegExp(/(\)|;)/.source);
     //const G6EndStat = new RegExp(/(\)|;|.{0})/.source);	
 
@@ -126,5 +123,35 @@ function GetRegExpVarDeclaration(isGlobal = false) {
         G4VarType.source +
         G5VarSubType.source +
         G6EndStat.source, searchParams));
-
+}
+function getVariablesFromLineText(docLineText = '', scope = '') {
+    let lineVariables = [];
+    const regExpVarDeclaration = GetRegExpVarDeclaration(true);
+    var varDecMatches = docLineText.match(regExpVarDeclaration);
+    if (varDecMatches) {
+        //subscriptionOnDidChange.dispose();//new
+        for (var j = 0; j < Object.keys(varDecMatches).length; j++) {
+            const singleMatch = varDecMatches[j].match(GetRegExpVarDeclaration(false));            
+            lineVariables.push({
+                "name": varDecMatches[j],
+                "scope": scope,
+                "type": singleMatch[6],
+                "subtype": singleMatch[7]
+            });
+        }
+    }
+    return lineVariables;
+}
+function pushArrayIntoArray(fromArray, toArray) {
+    if (fromArray) {
+        for (let j = 0; j < fromArray.length; j++) {
+            const element = fromArray[j];
+            toArray.push(element);
+        }
+    }
+}
+async function getSubtypeCount(currSubtype='',variableArray)
+{    
+    const subtypeOcurrences = variableArray.filter(x => x.subtype == currSubtype);
+    return subtypeOcurrences.length;
 }

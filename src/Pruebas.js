@@ -10,9 +10,9 @@ module.exports = {
 
         //GetWorkSpaceSymbols();
         //GetDocumentSymbols();
-        //GetDocumentVariables();
+        GetDocumentVariables();
         //GetDocumentProcedures();
-        getLocalVariables();
+        //getLocalVariables();
         //GetSymbolsInfo();
         //ExecuteCommWithUriAndRange('vscode.provideDocumentRangeSemanticTokens');
         //ExecuteCommWithUri('vscode.provideDocumentSemanticTokens');

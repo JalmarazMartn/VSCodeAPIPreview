@@ -12,7 +12,7 @@ module.exports = {
         //GetDocumentSymbols();
         //GetDocumentVariables();
         //GetDocumentProcedures();
-        getLocalVariables();
+        //getLocalVariables();
         //GetSymbolsInfo();
         //ExecuteCommWithUriAndRange('vscode.provideDocumentRangeSemanticTokens');
         //ExecuteCommWithUri('vscode.provideDocumentSemanticTokens');
@@ -35,6 +35,7 @@ module.exports = {
         //GetCodeActionsFromDoc();
         //GetCodeActionsFromDocByLine();
         //GetCodeActionProvider(); Ultima
+        consoleDoc();
     },
     GetALObjects: async function () {
         return (await GetALObjects());
@@ -366,4 +367,19 @@ async function getLocalVariables()
 {
     const GetSymbols = require('./GetSymbols.js');
     GetSymbols.getLocalVariables();
+}
+function consoleDoc()
+{
+    let document = vscode.window.activeTextEditor.document;
+    /*console.log(document);
+    console.log('document.isDirty');
+    console.log(document.isDirty);
+    console.log('document.isClosed');
+    console.log(document.isClosed);
+    console.log('document.fileName');
+    console.log(document.fileName);*/
+    console.log('document.uri');
+    console.log(document.uri);
+    console.log(document.uri.scheme.toString() == 'file')
+
 }

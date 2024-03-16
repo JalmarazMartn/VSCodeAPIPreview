@@ -1,4 +1,6 @@
+const { request } = require('http');
 const vscode = require('vscode');
+const diagnostics = require('./diganostics.js');
 var subscription = vscode.workspace.onDidChangeTextDocument(HandleDocumentChanges);
 subscription.dispose();
 //let ALObjects = [];
@@ -34,8 +36,11 @@ module.exports = {
         //executeDefinitionProvider();
         //GetCodeActionsFromDoc();
         //GetCodeActionsFromDocByLine();
-        //GetCodeActionProvider(); Ultima
-        consoleDoc();
+        //GetCodeActionProvider(); //Aqui       
+        diagnostics.getSelectionDiagnostics();//aqui
+        //consoleDoc();
+        //ExecuteCommandWithParam('interactive.open','https://regex101.com/');
+        //GetActiveTerminal();
     },
     GetALObjects: async function () {
         return (await GetALObjects());
@@ -115,7 +120,11 @@ async function ExecuteCommWithUri(CommandToExec = '') {
         console.log(locations);
     }
 }
-
+async function ExecuteCommandWithParam(CommandToExec = '',passedParam='') {
+    console.log('Command:' + CommandToExec);
+    let result = await vscode.commands.executeCommand(CommandToExec,passedParam);
+    console.log(result);
+}
 async function GetCodeActionProvider() {
     const codeActions = require('./codeActions.js');
     codeActions.getCodeActionProvider();
@@ -197,31 +206,6 @@ async function ShowALObjectsOuputChannel() {
     const LocalObjects = await GetALObjects();
     OutputChannel.appendLine('Objects: ' + LocalObjects.length);
     OutputChannel.show();
-}
-function GetDiagnostics() {
-    const AppUri = vscode.workspace.workspaceFile;
-    const AppDiagnostics = vscode.languages.getDiagnostics(AppUri);
-    let Problems = [];
-    for (let i = 0; i < AppDiagnostics.length; i++) {
-        console.log(AppDiagnostics[i]);
-        for (let j = 0; j < AppDiagnostics[i][1].length; j++) {
-            let Problem = AppDiagnostics[i][1][j];
-            let ProblemRange = Problem.range;
-            Problems.push(
-                {
-                    FilePath: AppDiagnostics[i][0].path,
-                    StarTLine: ProblemRange.start.line,
-                    StartColumn: ProblemRange.start.character,
-                    EndLine: ProblemRange.end.line,
-                    EndColumn: ProblemRange.end.character,
-                    MessageCode: getProblemMessageCode(Problem.code),
-                    MessageDescription: Problem.message,
-                    Severity: Problem.severity
-                })
-        }
-    }
-    console.log(Problems);
-    return Problems;
 }
 async function ReadLargeFile() {
     const options = {
@@ -318,13 +302,6 @@ async function executeDefinitionProvider() {
     console.log(definition);
 }
 
-function getProblemMessageCode(problemCode) {
-    if (!problemCode.value) {
-        return problemCode.toString();
-    }
-    return problemCode.value;
-
-}
 async function SelectExtension() {
     let AllExtensions = vscode.extensions.all;
     let extensionIds = [''];
@@ -383,3 +360,14 @@ function consoleDoc()
     console.log(document.uri.scheme.toString() == 'file')
 
 }
+function GetActiveTerminal()
+{
+    const currTerminal = vscode.window.activeTerminal;
+    console.log(currTerminal);
+    vscode.window.activeTerminal.sendText('dir *.*');
+}
+function GetCodeActionsFromDoc() {
+    const codeActions = require('./codeActions.js');
+    codeActions.getCodeActionsFromDoc();
+}
+

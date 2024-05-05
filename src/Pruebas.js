@@ -1,10 +1,13 @@
 const { request } = require('http');
 const vscode = require('vscode');
 const diagnostics = require('./diganostics.js');
+const { forEachChild } = require('typescript');
 var subscription = vscode.workspace.onDidChangeTextDocument(HandleDocumentChanges);
 subscription.dispose();
 //let ALObjects = [];
 let ALObjects = [];
+let sourceControl = {};
+let resourceGroup = {};
 module.exports = {
     Pruebas: async function (context) {
         //const translation = require('./translations.js');		
@@ -37,10 +40,13 @@ module.exports = {
         //GetCodeActionsFromDoc();
         //GetCodeActionsFromDocByLine();
         //GetCodeActionProvider(); //Aqui       
-        diagnostics.getSelectionDiagnostics();//aqui
+        //diagnostics.getSelectionDiagnostics();//aqui
         //consoleDoc();
         //ExecuteCommandWithParam('interactive.open','https://regex101.com/');
         //GetActiveTerminal();
+        //GetAPIExtension('vscode.git');
+        GetGitAPIExtension();
+        //getPrevVersionwithQuikDiff();
     },
     GetALObjects: async function () {
         return (await GetALObjects());
@@ -62,7 +68,7 @@ async function ExecuteDefinitionProvider() {
     console.log('vscode.executeDefinitionProvider');
     let document = vscode.window.activeTextEditor.document;
     let locations = await vscode.commands.executeCommand('vscode.executeDefinitionProvider',
-        document.uri,vscode.window.activeTextEditor.selection.start);
+        document.uri, vscode.window.activeTextEditor.selection.start);
     // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
     if (locations) {
         //console.log(locations[0].uri);
@@ -120,9 +126,9 @@ async function ExecuteCommWithUri(CommandToExec = '') {
         console.log(locations);
     }
 }
-async function ExecuteCommandWithParam(CommandToExec = '',passedParam='') {
+async function ExecuteCommandWithParam(CommandToExec = '', passedParam = '') {
     console.log('Command:' + CommandToExec);
-    let result = await vscode.commands.executeCommand(CommandToExec,passedParam);
+    let result = await vscode.commands.executeCommand(CommandToExec, passedParam);
     console.log(result);
 }
 async function GetCodeActionProvider() {
@@ -151,26 +157,23 @@ async function GetExtensions() {
     for (var i = 0; i < AllExtensions.length; i++) {
         let Extension = AllExtensions[i];
         ExtChannel.append(JSON.stringify(Extension));
-        await GetALExtension(Extension.id);
+        await GetAPIExtension(Extension.id);
     }
 }
-async function GetALExtension(ExtensionId = '') {
+async function GetAPIExtension(ExtensionId = '') {
     try {
-        const ALExtension = vscode.extensions.getExtension(ExtensionId);
-        if (!(ALExtension.isActive)) { ALExtension.activate }
-        const ALAPI = ALExtension.exports;
-        console.log(ALExtension);
-        if (ALAPI) {
+        const Extension = vscode.extensions.getExtension(ExtensionId);
+        if (!(Extension.isActive)) { Extension.activate }
+        const ExtAPI = Extension.exports;
+        console.log(Extension);
+        if (ExtAPI) {
             console.log('Extension =========>' + ExtensionId);
-            console.log(ALAPI);
-            if (ExtensionId == 'andrzejzwierzchowski.al-code-outline') {
-
-                const APIObject1 = await ALAPI.activeDocumentSymbols;
-                console.log('activeDocumentSymbols:');
-                console.log(APIObject1);
-                console.log('activeDocumentSymbols: Methods');
-                console.log(getMethods(APIObject1));
-            }
+            console.log(ExtAPI);
+            const APIObject1 = await ExtAPI.activeDocumentSymbols;
+            console.log('activeDocumentSymbols:');
+            console.log(APIObject1);
+            console.log('activeDocumentSymbols: Methods');
+            console.log(getMethods(APIObject1));
         }
     }
     catch (error) {
@@ -178,6 +181,35 @@ async function GetALExtension(ExtensionId = '') {
         return;
     }
 }
+async function GetGitAPIExtension() {
+    try {
+        const gitExtension = vscode.extensions.getExtension('vscode.git').exports;
+        const gitAPI = gitExtension.getAPI(1);
+        if (gitAPI) {
+            console.log('Extension =========>' + gitExtension);
+            console.log(gitAPI);
+            const APIObject1 = await gitAPI.activeDocumentSymbols;
+            console.log('activeDocumentSymbols:');
+            console.log(APIObject1);
+            console.log('activeDocumentSymbols: Methods');
+            console.log(getMethods(gitAPI));
+            //console.log(getMethods(APIObject1));
+            let repository = gitAPI.getRepository(vscode.window.activeTextEditor.document.uri);
+            console.log('repository');
+            console.log(repository);
+            let diffs = await repository.getDiff();
+            console.log('diffs');
+            for (let i = 0; i < diffs.length; i++) {
+                console.log(diffs[i]);
+            }
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return;
+    }
+}
+
 const getMethods = (obj) => {
     let properties = new Set()
     let currentObj = obj
@@ -216,7 +248,7 @@ async function ReadLargeFile() {
             'xlf': ['xlf'],
         }
     };
-    
+
     let fileUri = await vscode.window.showOpenDialog(options);
     const PromiseDlg = await vscode.window.showWarningMessage('Are you run a long time process with the file?', { modal: false }, 'Yes', 'No');
     if (PromiseDlg == 'No') {
@@ -328,25 +360,21 @@ async function SelectExtension() {
         console.log(APIObject1);
         console.log('ALObjectCollector: Methods');
         console.log(getMethods(APIObject1));
-    }    
+    }
 }
-async function GetDocumentVariables()
-{
+async function GetDocumentVariables() {
     const GetSymbols = require('./GetSymbols.js');
     GetSymbols.GetDocumentVariables();
 }
-async function GetDocumentProcedures()
-{
+async function GetDocumentProcedures() {
     const GetSymbols = require('./GetSymbols.js');
     GetSymbols.GetDocumentProcedures();
 }
-async function getLocalVariables()
-{
+async function getLocalVariables() {
     const GetSymbols = require('./GetSymbols.js');
     GetSymbols.getLocalVariables();
 }
-function consoleDoc()
-{
+function consoleDoc() {
     let document = vscode.window.activeTextEditor.document;
     /*console.log(document);
     console.log('document.isDirty');
@@ -360,8 +388,7 @@ function consoleDoc()
     console.log(document.uri.scheme.toString() == 'file')
 
 }
-function GetActiveTerminal()
-{
+function GetActiveTerminal() {
     const currTerminal = vscode.window.activeTerminal;
     console.log(currTerminal);
     vscode.window.activeTerminal.sendText('dir *.*');
@@ -370,4 +397,19 @@ function GetCodeActionsFromDoc() {
     const codeActions = require('./codeActions.js');
     codeActions.getCodeActionsFromDoc();
 }
-
+async function getPrevVersionwithQuikDiff()
+{
+    if (sourceControl.id != 'ownSCM')
+    {
+    sourceControl = vscode.scm.createSourceControl('ownSCM','OwnSCM');
+    console.log(sourceControl);
+    resourceGroup = sourceControl.createResourceGroup('rsGroup','rsGroup');
+    console.log('resourceGroup');
+    console.log(resourceGroup);
+    resourceGroup.resourceStates =  [{ resourceUri: vscode.window.activeTextEditor.document.uri }];
+    }
+    console.log('refresh resourceGroup');
+    console.log(resourceGroup);
+    console.log('resourceGroup.resourceStates');
+    console.log(resourceGroup.resourceStates);
+}

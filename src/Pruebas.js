@@ -39,14 +39,16 @@ module.exports = {
         //executeDefinitionProvider();
         //GetCodeActionsFromDoc();
         //GetCodeActionsFromDocByLine();
-        //GetCodeActionProvider(); //Aqui       
+        //getCodeActionsFromCurrLine();
+        GetCodeActionProvider(); //Aqui       
         //diagnostics.getSelectionDiagnostics();//aqui
         //consoleDoc();
         //ExecuteCommandWithParam('interactive.open','https://regex101.com/');
         //GetActiveTerminal();
         //GetAPIExtension('vscode.git');
-        GetGitAPIExtension();
+        //GetGitAPIExtension();
         //getPrevVersionwithQuikDiff();
+        //getDocCodeLens();
     },
     GetALObjects: async function () {
         return (await GetALObjects());
@@ -109,8 +111,7 @@ async function ExecuteCommWithUriAndRange(CommandToExec = '') {
     console.log('Command:' + CommandToExec);
     let document = vscode.window.activeTextEditor.document;
     let locations = await vscode.commands.executeCommand(CommandToExec,
-        document.uri, new vscode.Range(vscode.window.activeTextEditor.selection.start,
-            vscode.window.activeTextEditor.selection.end));
+        document.uri, vscode.window.activeTextEditor.selection);
     // console.log(await document.lineAt(vscode.window.activeTextEditor.selection.start.line).text);
     if (locations) {
         console.log(locations);
@@ -412,4 +413,18 @@ async function getPrevVersionwithQuikDiff()
     console.log(resourceGroup);
     console.log('resourceGroup.resourceStates');
     console.log(resourceGroup.resourceStates);
+}
+function getDocCodeLens() {
+    const codeActions = require('./codeActions.js');
+    codeActions.getDocCodeLens();
+}
+function GetCodeActionsFromDocByLine()
+{
+    const codeActions = require('./codeActions.js');
+    codeActions.getCodeActionsFromDocByLine();
+}
+function getCodeActionsFromCurrLine()
+{
+    const codeActions = require('./codeActions.js');
+    codeActions.getCodeActionsFromCurrLine();
 }

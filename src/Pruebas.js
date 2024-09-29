@@ -36,12 +36,14 @@ module.exports = {
         //ExecuteCommWithUriAndPos('git.commit');
         //ExcuteTask('echoDir');
         //executeDocumentSymbolProvider();
-        //executeDefinitionProvider();
-        //GetCodeActionsFromDoc();
-        //GetCodeActionsFromDocByLine();
+        //executeDefinitionProvider();        
+        applyCodeActionWithFilter();
+        //await GetCodeActionsFromDoc();//aqui
+        //await GetCodeActionsFromDocByLine();
+        //logGlobalActions();
         //getCodeActionsFromCurrLine();
-        GetCodeActionProvider(); //Aqui       
-        //diagnostics.getSelectionDiagnostics();//aqui
+        //GetCodeActionProvider();
+        //diagnostics.getSelectionDiagnostics();
         //consoleDoc();
         //ExecuteCommandWithParam('interactive.open','https://regex101.com/');
         //GetActiveTerminal();
@@ -131,10 +133,6 @@ async function ExecuteCommandWithParam(CommandToExec = '', passedParam = '') {
     console.log('Command:' + CommandToExec);
     let result = await vscode.commands.executeCommand(CommandToExec, passedParam);
     console.log(result);
-}
-async function GetCodeActionProvider() {
-    const codeActions = require('./codeActions.js');
-    codeActions.getCodeActionProvider();
 }
 
 function GetExtensionConf() {
@@ -394,10 +392,6 @@ function GetActiveTerminal() {
     console.log(currTerminal);
     vscode.window.activeTerminal.sendText('dir *.*');
 }
-function GetCodeActionsFromDoc() {
-    const codeActions = require('./codeActions.js');
-    codeActions.getCodeActionsFromDoc();
-}
 async function getPrevVersionwithQuikDiff()
 {
     if (sourceControl.id != 'ownSCM')
@@ -418,13 +412,34 @@ function getDocCodeLens() {
     const codeActions = require('./codeActions.js');
     codeActions.getDocCodeLens();
 }
-function GetCodeActionsFromDocByLine()
-{
+async function GetCodeActionsFromDoc() {
+    console.log('GetCodeActionsFromDoc');
     const codeActions = require('./codeActions.js');
-    codeActions.getCodeActionsFromDocByLine();
+    await codeActions.getCodeActionsFromDoc();
 }
-function getCodeActionsFromCurrLine()
+async function GetCodeActionProvider() {
+    const codeActions = require('./codeActions.js');
+    await codeActions.getCodeActionProvider();
+}
+async function GetCodeActionsFromDocByLine()
+{
+    console.log('GetCodeActionsFromDocByLine');
+    const codeActions = require('./codeActions.js');
+    await codeActions.getCodeActionsFromDocByLine();
+}
+async function getCodeActionsFromCurrLine()
+{
+    console.log('getCodeActionsFromCurrLine');
+    const codeActions = require('./codeActions.js');
+    await codeActions.getCodeActionsFromCurrLine();
+}
+function logGlobalActions()
 {
     const codeActions = require('./codeActions.js');
-    codeActions.getCodeActionsFromCurrLine();
+    codeActions.logGlobalActions();
+}
+function applyCodeActionWithFilter()
+{
+    const codeActions = require('./codeActions.js');
+    codeActions.applyCodeActionWithFilter();
 }

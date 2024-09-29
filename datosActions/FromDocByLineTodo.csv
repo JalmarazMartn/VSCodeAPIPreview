@@ -1,0 +1,29 @@
+FromDocByLine;kind;command
+Add permissions to all tables used by this object (AZ AL Dev Tools);quickfix;azALDevTools.addReferencedTablesPermissions
+Sort variables (AZ AL Dev Tools);quickfix;azALDevTools.sortVariables
+Sort properties (AZ AL Dev Tools);quickfix;azALDevTools.sortProperties
+Sort procedures (AZ AL Dev Tools);quickfix;azALDevTools.sortProcedures
+Create interface (AZ AL Dev Tools);quickfix;AZDevTools.ALCreateInterfaceCodeCommand
+Make variable global (AL CodeActions);refactor.rewrite;noCommand
+Suppress diagnostic AA0074 fix this instance only;quickfix;al/runCodeAction
+Suppress diagnostic AA0074 Suppress all diagnostics AA0074 in document.;noKind;al/runCodeAction
+Suppress diagnostic AA0074 Suppress all diagnostics AA0074 in project.;noKind;al/runCodeAction
+Suppress diagnostic AA0074 Suppress all diagnostics AA0074 in workspace.;noKind;al/runCodeAction
+Extract to Label (AL CodeActions);refactor.extract;alcodeactions.extractLabel
+Extract to locked Label (AL CodeActions);refactor.extract;alcodeactions.extractLabel
+Extract to procedure (AL CodeActions);refactor.extract;alCodeActions.extractMethod
+Extract to procedure with advanced options (AL CodeActions);refactor.extract;alCodeActions.extractMethod
+ Convert the 'with' statement to fully qualified statements.;quickfix;al/runCodeAction
+ Convert all 'with' statements in the document to fully qualified statements;noKind;al/runCodeAction
+ Convert all 'with' statements in the project to fully qualified statements;noKind;al/runCodeAction
+ Convert all 'with' statements in the workspace to fully qualified statements;noKind;al/runCodeAction
+Refactor to Validate-Statement (AL CodeActions);refactor.rewrite;noCommand
+Add missing case lines (AZ AL Dev Tools);quickfix;azALDevTools.runWorkspaceCodeAction
+Add parenthesis fix this instance only;quickfix;al/runCodeAction
+Add parenthesis fix all 'AA0008' in document;noKind;al/runCodeAction
+Add parenthesis fix all 'AA0008' in project;noKind;al/runCodeAction
+Add parenthesis fix all 'AA0008' in workspace;noKind;al/runCodeAction
+Suppress diagnostic AA0470 fix this instance only;quickfix;al/runCodeAction
+Suppress diagnostic AA0470 Suppress all diagnostics AA0470 in document.;noKind;al/runCodeAction
+Suppress diagnostic AA0470 Suppress all diagnostics AA0470 in project.;noKind;al/runCodeAction
+Suppress diagnostic AA0470 Suppress all diagnostics AA0470 in workspace.;noKind;al/runCodeAction

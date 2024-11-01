@@ -80,6 +80,7 @@ async function ExecuteDefinitionProvider() {
 
         console.log(doc.lineAt(locations[0].range.start.line).text);
         console.log(doc.getText(locations[0].range));
+        console.log(doc.getText());
         console.log(locations);
     }
 
@@ -326,13 +327,14 @@ async function executeDocumentSymbolProvider() {
     const symbols = await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri);
     console.log(symbols);
 }
-async function executeDefinitionProvider() {
+/*
+async function ExecuteDefinitionProvider() {
     const document = vscode.window.activeTextEditor.document;
     const position = vscode.window.activeTextEditor.selection.active;
     const definition = await vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, position);
     console.log(definition);
 }
-
+*/
 async function SelectExtension() {
     let AllExtensions = vscode.extensions.all;
     let extensionIds = [''];

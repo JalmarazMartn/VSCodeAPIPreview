@@ -23,8 +23,8 @@ module.exports = {
         globalActions = [];
     },
     applyCodeActionWithFilter: function () {
-        //applyCodeActionWithFilter('Make variable global (AL CodeActions)', 'label');
-        applyCodeActionWithFilter(" Convert the 'with' statement to fully qualified statements.",'with');
+        applyCodeActionWithFilter('Make variable global (AL CodeActions)', 'label');
+        //applyCodeActionWithFilter(" Convert the 'with' statement to fully qualified statements.",'with');
     }
 }
 async function GetCodeActionProvider() {
@@ -93,10 +93,10 @@ function pushGlobalCodeActionsIfNotExists(newCodeAction) {
 
 }
 async function execCodeAction(codeActions) {
-    console.log(codeActions);
+    //console.log(codeActions);
     if (codeActions[0].command) {
-        console.log(codeActions[0].command.command);
-        console.log(codeActions[0].command.arguments);
+        //console.log(codeActions[0].command.command);
+        //console.log(codeActions[0].command.arguments);
         let executionsWithArgs = 'vscode.commands.executeCommand(codeActions[0].command.command';
         if (codeActions[0].command.arguments) {
             for (let index = 0; index < codeActions[0].command.arguments.length; index++) {
@@ -217,8 +217,14 @@ async function ShowLineActions(i, document) {
         }
     }
 }
-async function applyEditFromCodeActions(codeActions) {
-    console.log(codeActions[0].edit);
+async function applyEditFromCodeActions(codeActions) {    
+    for (let index = 0; index < codeActions.length; index++) {
+        const element = codeActions[index];
+            console.log(element.edit.c[0].edit);
+            console.log(element.edit.c[1].edit);
+            console.log(element.edit.c[0].edit.newText);
+            console.log(element.edit.c[1].edit.newText);
+    }
     await vscode.workspace.applyEdit(codeActions[0].edit);
 }
 function consoleLogCodeActions(codeActions) {
@@ -247,14 +253,21 @@ function consoleLogCodeActions(codeActions) {
 }
 async function applyCodeActionWithFilter(codeActionTitle = '', searchExpresion = '') {
     const regex = new RegExp(searchExpresion, 'mgi');
-    const document = vscode.window.activeTextEditor.document;
+    const document = vscode.window.activeTextEditor.document;    
     for (let currline = 0; currline < document.lineCount; currline++) {
+        //console.log(document.lineAt(currline).text);
+        const patternPosition = document.lineAt(currline).text.search(regex)
         if (document.lineAt(currline).text.search(regex) >= 0) {
-            let codeActions = []
-            //await pushActionInRangeIfNotExists(currline, document, codeActions, 0, 0); //21       
-            await pushActionInRangeIfNotExists(currline, document, codeActions, 0, document.lineAt(currline).rangeIncludingLineBreak.end.character); //21       
-            await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, 1000);//23       
-            const existingCodeActions = codeActions.filter(x => x.title == codeActionTitle);
+            let codeActions = []            
+            //original
+            //await pushActionInRangeIfNotExists(currline, document, codeActions, 0, document.lineAt(currline).rangeIncludingLineBreak.end.character); //21       
+            //await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, 1000);//23       
+            //solo ultimo
+            //await pushActionInRangeSubstitute(currline, document, codeActions, 0, document.lineAt(currline).rangeIncludingLineBreak.end.character,codeActionTitle); //21       
+            //await pushActionInRangeSubstitute(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, 1000,codeActionTitle);//23       
+            //nuevo
+            await pushActionInRangeSubstitute(currline, document, codeActions, patternPosition, patternPosition,codeActionTitle); 
+            const existingCodeActions = codeActions.filter(x => x.title == codeActionTitle);            
             if (existingCodeActions) {
                 if (existingCodeActions.length > 0) {                    
                     await execCodeAction(existingCodeActions);
@@ -262,4 +275,30 @@ async function applyCodeActionWithFilter(codeActionTitle = '', searchExpresion =
             }
         }
     }
+}
+async function pushActionInRangeSubstitute(currline, document, codeActions, firstPos, finalPos,codeActionTitle = '') {
+    const range = new vscode.Range(new vscode.Position(currline, firstPos), new vscode.Position(currline, finalPos));
+    const definition = await vscode.commands.executeCommand("vscode.executeCodeActionProvider", document.uri, range);    
+    for (let index = 0; index < definition.length; index++) {
+        const CodeAction = definition[index];
+        if (codeActionTitle == CodeAction.title)
+        {
+            pushCodeActionSubstitute(CodeAction, codeActions);
+        }
+    }
+}
+function pushCodeActionSubstitute(newCodeAction, codeActions) {
+    let existingAction = -1;
+    /*for (let index = 0; index < codeActions.length; index++) {
+        const element = codeActions[index];
+        if (element.title == newCodeAction.title)
+            {
+                existingAction = index;
+            }
+    }
+    if (existingAction > -1)
+    {
+        codeActions.slice(existingAction,1);
+    }*/
+    codeActions.push(newCodeAction);
 }

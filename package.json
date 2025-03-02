@@ -19,8 +19,6 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscAPIPrev.MiscPruebas",
-		"onCommand:vscAPIPrev.MiscPruebas2",
 		"onLanguage:al"
 	],
 	"main": "./extension.js",
@@ -33,6 +31,10 @@
 			{
 				"command": "vscAPIPrev.MiscPruebas2",
 				"title": "Deprecated JAM 2 Pruebas diversas para uso interno"
+			},
+			{
+				"command": "vscAPIPrev.CopilotRegex",
+				"title": "JAM Copilot Regex"
 			}
 		]
 	},

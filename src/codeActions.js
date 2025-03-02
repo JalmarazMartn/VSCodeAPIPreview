@@ -25,6 +25,9 @@ module.exports = {
     applyCodeActionWithFilter: function () {
         applyCodeActionWithFilter('Make variable global (AL CodeActions)', 'label');
         //applyCodeActionWithFilter(" Convert the 'with' statement to fully qualified statements.",'with');
+    },
+    getElementFromJson: function (jsonObject, elementName) {
+        return getElementFromJson(jsonObject, elementName);
     }
 }
 async function GetCodeActionProvider() {
@@ -163,14 +166,15 @@ async function GetCodeActionsFromDocByLine() {
         //await pushActionInRangeIfNotExists(currline, document, codeActions,0,1000);//23
 
 
-        //combinacion que consigue todos los diagnosticos. 24
-        /*
-        await pushActionInRangeIfNotExists(currline, document, codeActions, 0, document.lineAt(currline).rangeIncludingLineBreak.end.character); //21       
-        await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, 1000);//23
-        */
-        //fin combi
-
-        await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, document.lineAt(currline).firstNonWhitespaceCharacterIndex);
+        //***combinacion que consigue todos los diagnosticos. 24
+        //await pushActionInRangeIfNotExists(currline, document, codeActions, 0, document.lineAt(currline).rangeIncludingLineBreak.end.character); //21       
+        //await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, 1000);//23
+        //***fin combi
+        //nueva combi de todos los diagnosticos
+        await pushActionInRangeIfNotExists(currline, document, codeActions, 0, document.lineAt(currline).firstNonWhitespaceCharacterIndex);
+        await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex,document.lineAt(currline).text.length);//
+        //Fin nueva combi
+        //await pushActionInRangeIfNotExists(currline, document, codeActions, document.lineAt(currline).firstNonWhitespaceCharacterIndex, document.lineAt(currline).firstNonWhitespaceCharacterIndex);
 
         //await pushActionInRangeIfNotExists(currline, document, codeActions,document.lineAt(currline).rangeIncludingLineBreak.start.character,document.lineAt(currline).rangeIncludingLineBreak.end.character);
 
@@ -301,4 +305,18 @@ function pushCodeActionSubstitute(newCodeAction, codeActions) {
         codeActions.slice(existingAction,1);
     }*/
     codeActions.push(newCodeAction);
+}
+function getElementFromJson(jsonObj, elementName) {
+    for (let key in jsonObj) {
+        if (key === elementName) {
+            return jsonObj[key];
+        }
+        if (typeof jsonObj[key] === 'object' && jsonObj[key] !== null) {
+            let result = getElementFromJson(jsonObj[key], elementName);
+            if (result) {
+                return result;
+            }
+        }
+    }
+    return null; // Element not found
 }

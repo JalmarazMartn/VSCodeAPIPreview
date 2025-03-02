@@ -37,11 +37,11 @@ module.exports = {
         //ExcuteTask('echoDir');
         //executeDocumentSymbolProvider();
         //executeDefinitionProvider();        
-        applyCodeActionWithFilter();
-        //await GetCodeActionsFromDoc();//aqui
+        //applyCodeActionWithFilter();  aqui
+        //await GetCodeActionsFromDoc();
         //await GetCodeActionsFromDocByLine();
         //logGlobalActions();
-        //getCodeActionsFromCurrLine();
+        getCodeActionsFromCurrLine();
         //GetCodeActionProvider();
         //diagnostics.getSelectionDiagnostics();
         //consoleDoc();

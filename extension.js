@@ -32,6 +32,13 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposableMiscPruebas2);
 
+
+	let disposableCopilotRexex = vscode.commands.registerCommand('vscAPIPrev.CopilotRegex', function () {
+		const copilotRegex = require('./src/copilot.js');
+		copilotRegex.getRegex();
+	});
+	context.subscriptions.push(disposableCopilotRexex);
+
 	/*const transferFieldsDiagnostics = vscode.languages.createDiagnosticCollection("transferFields");
 	context.subscriptions.push(transferFieldsDiagnostics);
 	const CodeActions = require('./src/CodeAction.js');

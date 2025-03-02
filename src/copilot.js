@@ -13,8 +13,10 @@ async function getRegex() {
         /*const messages = [
             vscode.LanguageModelChatMessage.User(`Generate a JavaScript regex for the following explanation: ${explanation}`)
         ];*/
-        const messages = [
-            vscode.LanguageModelChatMessage.User('Generate a JavaScript regex for the following explanation: ' + explanation)
+        const messages = [            
+            vscode.LanguageModelChatMessage.User('Intructions: input is regex explanation and output two strings: one with only the regular expressión and other with a match example'),
+            vscode.LanguageModelChatMessage.User('Example: input: "12 digits" output: ["\\d{12}", "123456789012"]'),
+            vscode.LanguageModelChatMessage.User('Generate a regex for the following explanation: ' + explanation),            
         ];
 
         try {

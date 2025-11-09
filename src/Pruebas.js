@@ -41,14 +41,14 @@ module.exports = {
         //await GetCodeActionsFromDoc();
         //await GetCodeActionsFromDocByLine();
         //logGlobalActions();
-        getCodeActionsFromCurrLine();
+        //getCodeActionsFromCurrLine();
         //GetCodeActionProvider();
         //diagnostics.getSelectionDiagnostics();
         //consoleDoc();
         //ExecuteCommandWithParam('interactive.open','https://regex101.com/');
         //GetActiveTerminal();
         //GetAPIExtension('vscode.git');
-        //GetGitAPIExtension();
+        GetGitAPIExtension();
         //getPrevVersionwithQuikDiff();
         //getDocCodeLens();
     },
@@ -186,22 +186,68 @@ async function GetGitAPIExtension() {
         const gitExtension = vscode.extensions.getExtension('vscode.git').exports;
         const gitAPI = gitExtension.getAPI(1);
         if (gitAPI) {
-            console.log('Extension =========>' + gitExtension);
-            console.log(gitAPI);
+            /*console.log('Extension =========>' + gitExtension);
+            console.log(gitAPI);*/
             const APIObject1 = await gitAPI.activeDocumentSymbols;
-            console.log('activeDocumentSymbols:');
+            /*console.log('activeDocumentSymbols:');
             console.log(APIObject1);
             console.log('activeDocumentSymbols: Methods');
-            console.log(getMethods(gitAPI));
+            console.log(getMethods(gitAPI));*/
             //console.log(getMethods(APIObject1));
             let repository = gitAPI.getRepository(vscode.window.activeTextEditor.document.uri);
-            console.log('repository');
-            console.log(repository);
-            let diffs = await repository.getDiff();
+            /*console.log('repository');
+            console.log(repository);*/
+            //
+            const currentDiferences = await repository.diffWithHEAD();
+            console.log(currentDiferences);
+            const originalContent = await getFileContentAtUri(currentDiferences[0].originalUri);
+            const modifiedContent = await getFileContentAtUri(currentDiferences[0].uri);
+            console.log(`--- Diff for file: ${vscode.workspace.asRelativePath(currentDiferences[0].uri)} ---`);
+            console.log("Original Content (Parent Commit):", originalContent.substring(0, 300) + '...');
+            console.log("Modified Content (Last Commit):", modifiedContent.substring(0, 300) + '...');
+
+            const commits = await repository.log({ maxCount: 5 });
+
+            if (commits.length > 0) {
+                //let commitInfo = `Last ${commits.length} commits in ${repository.rootUri.name}:\n\n`;
+                commits.forEach((commit, index) => {
+                    //const date = new Date(commit.timestamp * 1000).toLocaleDateString();
+                    //commitInfo += `${index + 1}. Hash: ${commit.hash.substring(0, 7)}\n   Author: ${commit.authorName}\n   Date: ${date}\n   Message: ${commit.message.split('\n')[0]}\n\n`;
+                    /*console.log(`${index + 1}. Hash: ${commit.hash.substring(0, 7)} Author: ${commit.authorName} Message: ${commit.message.split('\n')[0]}`);
+                    console.log(commit);*/
+                    //https://share.google/aimode/chXxo9aEf8LMcQxXt 
+                });                  
+            }
+            const lastCommit = commits[0];
+            const parentHash = lastCommit.parents[0];
+            const changes = await repository.diffBetween(parentHash, lastCommit.hash);
+
+            // Store the results in variables and process them
+            let changedFilesList = [];
+            let detailedOutput = `Commit Hash: ${lastCommit.hash}\nMessage: ${lastCommit.message}\n\nChanged Files:\n`;
+
+            for (const change of changes) {
+                const statusText = change.status.toString(); // Convert numeric status to string
+                const fileName = vscode.workspace.asRelativePath(change.uri, false);
+                //console.log(`File: ${fileName}, Status: ${statusText}`);
+                //console.log(change);
+                const originalContent = await getFileContentAtUri(change.originalUri);
+                const modifiedContent = await getFileContentAtUri(change.uri);
+
+                console.log(`--- Diff for file: ${vscode.workspace.asRelativePath(change.uri)} ---`);
+                console.log("Original Content (Parent Commit):", originalContent.substring(0, 100) + '...');
+                console.log("Modified Content (Last Commit):", modifiedContent.substring(0, 100) + '...');
+
+                changedFilesList.push(fileName);                
+                detailedOutput += `- [${statusText}] ${fileName}\n`;
+
+            }            
+            //
+            /*let diffs = await repository.getDiff();
             console.log('diffs');
             for (let i = 0; i < diffs.length; i++) {
                 console.log(diffs[i]);
-            }
+            }*/
         }
     }
     catch (error) {
@@ -209,7 +255,16 @@ async function GetGitAPIExtension() {
         return;
     }
 }
-
+async function getFileContentAtUri(uri) {
+    try {
+        // This relies on the built-in Git extension providing content for its custom URIs (like `git://...`)
+        const document = await vscode.workspace.openTextDocument(uri);
+        return document.getText();
+    } catch (error) {
+        console.error(`Failed to get content for URI: ${uri.toString()}`, error);
+        return undefined;
+    }
+}        
 const getMethods = (obj) => {
     let properties = new Set()
     let currentObj = obj
@@ -402,9 +457,9 @@ async function getPrevVersionwithQuikDiff()
     console.log(sourceControl);
     resourceGroup = sourceControl.createResourceGroup('rsGroup','rsGroup');
     console.log('resourceGroup');
-    console.log(resourceGroup);
-    resourceGroup.resourceStates =  [{ resourceUri: vscode.window.activeTextEditor.document.uri }];
+    console.log(resourceGroup);    
     }
+    resourceGroup.resourceStates =  [{ resourceUri: vscode.window.activeTextEditor.document.uri }];
     console.log('refresh resourceGroup');
     console.log(resourceGroup);
     console.log('resourceGroup.resourceStates');
